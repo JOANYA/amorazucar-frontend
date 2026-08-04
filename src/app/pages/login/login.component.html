@@ -1,0 +1,87 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-container">
+      <div class="logo-circle">
+        <span class="logo-icon">🎀</span>
+      </div>
+      <h1>Azúcar &amp; Amor</h1>
+      <p>Pastelería Artesanal</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      @if (errorMessage) {
+        <div class="alert-error">{{ errorMessage }}</div>
+      }
+
+      <div class="form-group">
+        <label for="dni">DNI</label>
+        <div class="input-wrapper">
+          <span class="icon">🆔</span>
+          <input
+            id="dni"
+            type="text"
+            inputmode="numeric"
+            formControlName="dni"
+            placeholder="Ingresa tu DNI"
+            maxlength="8"
+            [class.is-invalid]="dni?.touched && dni?.invalid"
+          />
+        </div>
+        @if (dni?.touched && dni?.invalid) {
+          <div class="error-text">
+            @if (dni?.errors?.['required']) {
+              <small>El DNI es obligatorio.</small>
+            }
+            @if (dni?.errors?.['pattern']) {
+              <small>El DNI debe tener exactamente 8 dígitos.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password_hash">Contraseña</label>
+        <div class="input-wrapper">
+          <span class="icon">🔒</span>
+          <input
+            id="password_hash"
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password_hash"
+            placeholder="Ingresa tu contraseña"
+            [class.is-invalid]="password_hash?.touched && password_hash?.invalid"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          >
+            {{ hidePassword ? '👁️' : '🙈' }}
+          </button>
+        </div>
+        @if (password_hash?.touched && password_hash?.invalid) {
+          <div class="error-text">
+            @if (password_hash?.errors?.['required']) {
+              <small>La contraseña es obligatoria.</small>
+            }
+            @if (password_hash?.errors?.['minlength']) {
+              <small>Debe tener al menos 6 caracteres.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="isLoading">
+        @if (!isLoading) {
+          <span>Iniciar Sesión</span>
+        } @else {
+          <span class="spinner"></span>
+        }
+      </button>
+
+      <div class="form-footer">
+        <p>¿No tienes una cuenta? <a routerLink="/registro">Regístrate aquí</a></p>
+      </div>
+    </form>
+  </div>
+</div>

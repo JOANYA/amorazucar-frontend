@@ -1,0 +1,107 @@
+<div class="menu-shell" [class.sidebar-cerrado]="!sidebarAbierto">
+
+  <!-- SIDEBAR IZQUIERDO -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icono">🎀</span>
+      @if (sidebarAbierto) {
+        <span class="brand-texto">Azúcar & Amor</span>
+      }
+    </div>
+
+    <div class="sidebar-usuario" *ngIf="usuario as u">
+      <div class="avatar">{{ nombreUsuario.charAt(0) || '?' }}</div>
+      @if (sidebarAbierto) {
+        <div class="datos-usuario">
+          <span class="nombre">{{ nombreUsuario }}</span>
+          <span class="rol badge">{{ rolUsuario }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- CAMPANITA DE NOTIFICACIONES -->
+    <div class="notificaciones-wrapper">
+      <button class="btn-campana" (click)="toggleNotificaciones()" title="Notificaciones">
+        <span class="icono">🔔</span>
+        @if (notificacionesNoLeidas > 0) {
+          <span class="badge-no-leidas">{{ notificacionesNoLeidas }}</span>
+        }
+        @if (sidebarAbierto) { <span>Notificaciones</span> }
+      </button>
+
+      @if (mostrarNotificaciones) {
+        <div class="panel-notificaciones">
+          @if (notificaciones.length === 0) {
+            <p class="sin-notificaciones">No tienes notificaciones.</p>
+          }
+          @for (n of notificaciones; track n.id_notificacion) {
+            <div class="notificacion-item" [class.no-leida]="!n.leido" (click)="marcarLeida(n)">
+              <p class="mensaje">{{ n.mensaje }}</p>
+              @if (n.fecha_envio || n.fecha_creacion) {
+                <small class="fecha">{{ n.fecha_envio || n.fecha_creacion | date: 'dd/MM/yyyy HH:mm' }}</small>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        routerLink="/menu/ventas"
+        routerLinkActive="activo"
+        class="nav-item"
+        title="Tienda"
+      >
+        <span class="icono">🛒</span>
+        @if (sidebarAbierto) { <span>Tienda</span> }
+      </a>
+
+      <a
+        routerLink="/menu/pedidos"
+        routerLinkActive="activo"
+        class="nav-item"
+        title="Pedidos"
+      >
+        <span class="icono">💳</span>
+        @if (sidebarAbierto) { <span>{{ esAdmin ? 'Pedidos y Pagos' : 'Mis pedidos' }}</span> }
+      </a>
+
+      <a
+        routerLink="/menu/entregas"
+        routerLinkActive="activo"
+        class="nav-item"
+        title="Entregas"
+      >
+        <span class="icono">🚚</span>
+        @if (sidebarAbierto) { <span>Entregas</span> }
+      </a>
+
+      @if (esAdmin) {
+        <div class="nav-separador">
+          @if (sidebarAbierto) { <span>Administración</span> }
+        </div>
+        <a routerLink="/home" class="nav-item" title="Sitio público">
+          <span class="icono">🌐</span>
+          @if (sidebarAbierto) { <span>Ver sitio público</span> }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item toggle-btn" (click)="toggleSidebar()" title="Colapsar menú">
+        <span class="icono">{{ sidebarAbierto ? '⏴' : '⏵' }}</span>
+        @if (sidebarAbierto) { <span>Colapsar</span> }
+      </button>
+      <button class="nav-item cerrar-sesion-btn" (click)="cerrarSesion()" title="Cerrar sesión">
+        <span class="icono">🚪</span>
+        @if (sidebarAbierto) { <span>Cerrar sesión</span> }
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="menu-contenido">
+    <router-outlet></router-outlet>
+  </main>
+</div>

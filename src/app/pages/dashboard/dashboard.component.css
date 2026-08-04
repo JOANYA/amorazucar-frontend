@@ -1,0 +1,152 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #FFF8F2;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #E86A92 0%, #D4AF37 100%);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(90, 45, 45, 0.15);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.saludo {
+  font-size: 0.95rem;
+}
+
+.rol-badge {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.btn-logout {
+  background: #5A2D2D;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-logout:hover {
+  opacity: 0.9;
+}
+
+.contenido {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.bienvenida h1 {
+  color: #5A2D2D;
+  margin-bottom: 0.5rem;
+}
+
+.bienvenida p {
+  color: #8a5a5a;
+  margin-bottom: 2rem;
+}
+
+.menu-section h2 {
+  color: #5A2D2D;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #F8C8D8;
+  padding-bottom: 0.5rem;
+}
+
+.estado-msg {
+  color: #8a5a5a;
+  font-size: 0.9rem;
+}
+
+.estado-msg.error {
+  color: #C62828;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.postre-card {
+  background: #fff;
+  border: 2px solid #F8C8D8;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 6px 18px rgba(90, 45, 45, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.postre-card:hover {
+  transform: translateY(-3px);
+}
+
+.postre-card h3 {
+  color: #5A2D2D;
+  margin-bottom: 0.4rem;
+}
+
+.postre-card .descripcion {
+  color: #8a5a5a;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.postre-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.postre-footer .precio {
+  color: #E86A92;
+}
+
+.postre-footer .stock {
+  color: #D4AF37;
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    padding: 1rem;
+  }
+  .contenido {
+    padding: 1.25rem;
+  }
+}

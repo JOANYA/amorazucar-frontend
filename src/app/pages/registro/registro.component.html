@@ -1,0 +1,132 @@
+<div class="page">
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">🧁</div>
+      <span class="brand-name">Azúcar &amp; Amor</span>
+    </div>
+
+    <h1>Crear cuenta</h1>
+    <p class="subtitle">Regístrate para gestionar tu pastelería</p>
+
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="section-title">Datos Personales</div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            placeholder="Joshua"
+            [class.error-border]="isFieldInvalid('nombre')"
+          />
+          @if (isFieldInvalid('nombre')) {
+            <span class="err-msg">Ingresa tu nombre</span>
+          }
+        </div>
+        <div class="field">
+          <label for="apellido">Apellido</label>
+          <input
+            id="apellido"
+            type="text"
+            formControlName="apellido"
+            placeholder="García"
+            [class.error-border]="isFieldInvalid('apellido')"
+          />
+          @if (isFieldInvalid('apellido')) {
+            <span class="err-msg">Ingresa tu apellido</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="dni">DNI</label>
+          <input
+            id="dni"
+            type="text"
+            inputmode="numeric"
+            formControlName="dni"
+            placeholder="77777777"
+            maxlength="8"
+            [class.error-border]="isFieldInvalid('dni')"
+          />
+          @if (isFieldInvalid('dni')) {
+            <span class="err-msg">DNI de 8 dígitos requerido</span>
+          }
+        </div>
+        <div class="field">
+          <label for="telefono">Teléfono <span class="optional">(opcional)</span></label>
+          <input
+            id="telefono"
+            type="tel"
+            formControlName="telefono"
+            placeholder="987654321"
+            maxlength="9"
+            [class.error-border]="isFieldInvalid('telefono')"
+          />
+          @if (isFieldInvalid('telefono')) {
+            <span class="err-msg">Teléfono de 9 dígitos inválido</span>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="correo">Correo electrónico <span class="optional">(opcional)</span></label>
+        <input
+          id="correo"
+          type="email"
+          formControlName="correo"
+          placeholder="cliente@azucaryamor.com"
+          [class.error-border]="isFieldInvalid('correo')"
+        />
+        @if (isFieldInvalid('correo')) {
+          <span class="err-msg">Formato de correo inválido</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password_hash">Contraseña</label>
+        <div class="input-eye">
+          <input
+            id="password_hash"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password_hash"
+            placeholder="Mínimo 6 caracteres"
+            [class.error-border]="isFieldInvalid('password_hash')"
+          />
+          <button
+            type="button"
+            class="eye-btn"
+            (click)="showPassword = !showPassword"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            {{ showPassword ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if (isFieldInvalid('password_hash')) {
+          <span class="err-msg">La contraseña debe tener mínimo 6 caracteres</span>
+        }
+      </div>
+
+      <button class="btn" type="submit" [disabled]="isLoading">
+        @if (isLoading) {
+          <span class="spinner"></span>Registrando...
+        } @else {
+          Crear cuenta
+        }
+      </button>
+
+    </form>
+
+    <p class="login-link">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+  </div>
+
+  @if (toastMessage) {
+    <div class="toast show" [class.success]="toastType === 'success'" [class.error]="toastType === 'error'">
+      {{ toastMessage }}
+    </div>
+  }
+</div>

@@ -1,0 +1,54 @@
+<div class="dashboard">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🎀</span>
+      <span class="brand-name">Azúcar &amp; Amor</span>
+    </div>
+
+    <div class="usuario-info">
+      @if (usuario) {
+        <span class="saludo">Hola, <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong></span>
+        <span class="rol-badge">{{ usuario.rol }}</span>
+      }
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="contenido">
+    <section class="bienvenida">
+      <h1>Bienvenido a tu pastelería 🧁</h1>
+      <p>Este es tu panel principal. Desde aquí podrás gestionar el catálogo, el menú del día y tus ventas.</p>
+    </section>
+
+    <section class="menu-section">
+      <h2>Catálogo de postres</h2>
+
+      @if (cargandoMenu) {
+        <p class="estado-msg">Cargando catálogo...</p>
+      }
+
+      @if (errorMenu) {
+        <p class="estado-msg error">{{ errorMenu }}</p>
+      }
+
+      @if (!cargandoMenu && !errorMenu && postres.length === 0) {
+        <p class="estado-msg">Todavía no hay postres registrados en el catálogo.</p>
+      }
+
+      <div class="menu-grid">
+        @for (postre of postres; track postre.id_postre) {
+          <div class="postre-card">
+            <h3>{{ postre.nombre }}</h3>
+            @if (postre.descripcion) {
+              <p class="descripcion">{{ postre.descripcion }}</p>
+            }
+            <div class="postre-footer">
+              <span class="precio">S/ {{ postre.precio_actual }}</span>
+              <span class="stock">Stock: {{ postre.stock_total }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  </main>
+</div>

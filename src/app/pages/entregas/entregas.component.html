@@ -1,0 +1,84 @@
+<div class="entregas-container py-5">
+  <div class="container">
+    
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+      <a routerLink="/home" class="btn-volver mb-3">⬅ Volver al Inicio</a>
+      <h1 class="titulo-galeria">📸 Pedidos Entregados con Amor</h1>
+      <p class="subtitulo-galeria">
+        Mira cómo llegan nuestros postres a los hogares de nuestros clientes. ¡100% reales e impecables!
+      </p>
+    </div>
+
+    <!-- PANEL EXCLUSIVO PARA ADMINISTRADOR (Formulario de Carga) -->
+    @if (esAdmin) {
+      <div class="card card-admin mb-5 p-4">
+        <h3 class="admin-title mb-3">👑 Panel de Administrador: Registrar Nueva Entrega</h3>
+        
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-4">
+            <label class="form-label font-weight-bold">Nombre / Iníciales Cliente:</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevoCliente" placeholder="Ej. Mariana P." />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Distrito / Zona:</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevoDistrito" placeholder="Ej. San Borja" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Seleccionar Foto del Delivery:</label>
+            <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)" />
+          </div>
+
+          <!-- Previsualización de la foto seleccionada -->
+          @if (imagenPreview) {
+            <div class="col-12 text-center mt-3">
+              <p class="small text-muted mb-1">Vista previa:</p>
+              <img [src]="imagenPreview" alt="Previsualización" class="img-preview" />
+            </div>
+          }
+
+          <div class="col-12 text-end mt-3">
+            <button class="btn btn-publicar" (click)="guardarEntrega()">
+              🚀 Publicar Foto en la Galería
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- GALERÍA PÚBLICA DE ENTREGAS (Lo que ven los clientes) -->
+    <div class="row g-4">
+      @for (item of entregas; track item.id) {
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card-entrega h-100">
+            <div class="img-wrapper">
+              <img [src]="item.imagenUrl" [alt]="item.cliente" class="img-entrega" />
+              <span class="badge-distrito">{{ item.distrito }}</span>
+            </div>
+            
+            <div class="p-3 d-flex justify-content-between align-items-center">
+              <div>
+                <strong class="cliente-nombre">Entregado a {{ item.cliente }}</strong>
+                <small class="fecha-text d-block">{{ item.fecha }}</small>
+              </div>
+
+              <!-- Botón Eliminar solo visible para el Admin -->
+              @if (esAdmin) {
+                <button class="btn btn-danger btn-sm" (click)="eliminar(item.id)" title="Eliminar foto">
+                  🗑️
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-12 text-center py-5">
+          <p class="text-muted fs-5">Aún no hay fotos de entregas publicadas.</p>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

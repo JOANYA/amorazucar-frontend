@@ -1,0 +1,221 @@
+<!-- NAVBAR SUPERIOR -->
+<header class="navbar-tienda py-3 px-4 d-flex justify-content-between align-items-center">
+  <!-- Marca / Logo -->
+  <a routerLink="/home" class="navbar-brand text-white fw-bold d-flex align-items-center gap-2 text-decoration-none">
+    🎀 Azúcar & Amor
+  </a>
+
+  <!-- Zona de usuario / Acciones -->
+  <div class="d-flex align-items-center gap-3">
+    <!-- SI EL USUARIO ESTÁ LOGUEADO -->
+    @if (estaAutenticado) {
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-white fw-semibold">
+          👤 Hola, {{ nombreUsuario }}
+        </span>
+
+        @if (esAdmin) {
+          <span class="badge bg-warning text-dark">Admin</span>
+        }
+
+        <a routerLink="/menu/ventas" class="btn btn-light rounded-pill px-3 ms-2">
+          🛒 Ir al Menú
+        </a>
+
+        <button class="btn btn-danger btn-sm rounded-pill ms-2" (click)="cerrarSesion()">
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+    } 
+    <!-- SI NO ESTÁ LOGUEADO -->
+    @else {
+      <div class="d-flex gap-2">
+        <a routerLink="/login" class="btn btn-outline-light rounded-pill px-3">
+          🔑 Iniciar Sesión
+        </a>
+        <a routerLink="/registro" class="btn btn-light rounded-pill px-3">
+          ✨ Registrarse
+        </a>
+      </div>
+    }
+  </div>
+</header>
+
+<!-- BARRA DE CONTACTO SUPERIOR (TOP BAR) -->
+<div class="top-bar py-2">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+    
+    <!-- Enlace a WhatsApp -->
+    <a href="https://wa.me/51999999999?text=Hola,%20quisiera%20hacer%20un%20pedido%20en%20Azúcar%20%26%20Amor" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       class="contact-link whatsapp-link">
+      📲 WhatsApp: +51 999 999 999
+    </a>
+
+    <!-- Redes Sociales -->
+    <div class="social-links d-flex gap-3 align-items-center">
+      <span class="d-none d-sm-inline text-muted small">Síguenos:</span>
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" title="Facebook">
+        📘 Facebook
+      </a>
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
+        📸 Instagram
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- HERO CENTRADO -->
+<section class="hero d-flex align-items-center justify-content-center text-center">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+
+  <div class="container position-relative py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8 d-flex flex-column align-items-center">
+        
+        <!-- Logo Grande Centrado -->
+        <img src="/img/logo-azucar-amor.jpeg" alt="Azúcar & Amor" class="hero-logo mb-4" />
+        
+        <h1 class="hero-title">Dulces hechos en casa, con amor</h1>
+        <p class="hero-subtitle">
+          Postres artesanales preparados con ingredientes seleccionados y mucho cariño,
+          listos para endulzar tu día.
+        </p>
+
+        <!-- Botones de Acción -->
+        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+          <button class="btn btn-comprar btn-lg" (click)="irAComprar()">
+            🛒 Quiero comprar
+          </button>
+          <button class="btn btn-outline-registro btn-lg" (click)="irARegistro()">
+            Crear cuenta gratis
+          </button>
+        </div>
+
+        <p class="mt-3 small text-muted">
+          ¿Ya tienes cuenta? 
+          <button (click)="irALogin()" class="btn btn-link link-login p-0 align-baseline">Inicia sesión aquí</button>
+        </p>
+
+        <!-- Emojis Flotantes Centrados -->
+        <div class="hero-showcase mt-4">
+          <span class="showcase-emoji e1">🧁</span>
+          <span class="showcase-emoji e2">🍰</span>
+          <span class="showcase-emoji e3">🍓</span>
+          <span class="showcase-emoji e4">🍫</span>
+          <span class="showcase-emoji e5">🍮</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATALOGO DESTACADO -->
+<section class="catalogo py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="catalogo-title">Nuestros dulces favoritos</h2>
+      <p class="catalogo-subtitle">Una probadita de lo que preparamos cada día para ti</p>
+    </div>
+
+    @if (cargandoDestacados) {
+      <p class="text-center text-muted">Cargando nuestros postres...</p>
+    }
+
+    @if (!cargandoDestacados && destacados.length === 0) {
+      <p class="text-center text-muted">Muy pronto vas a ver aquí nuestros postres 🍰</p>
+    }
+
+    <div class="row g-4">
+      @for (postre of destacados; track postre.id_postre) {
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="postre-card h-100">
+            @if (postre.imagen) {
+              <img [src]="urlImagenPostre(postre)" [alt]="postre.nombre" class="postre-foto" />
+            } @else {
+              <div class="postre-icono">{{ postre.emoji }}</div>
+            }
+            <h3 class="postre-nombre">{{ postre.nombre }}</h3>
+            <p class="postre-resena">{{ postre.descripcion || 'Un dulce hecho con mucho cariño.' }}</p>
+            <p class="postre-precio">S/ {{ postre.precio_actual }}</p>
+            <button class="btn btn-comprar-sm" (click)="irAComprar()">Comprar</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN DE RESEÑAS Y OPINIONES -->
+<section class="resenas-section py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="badge badge-resenas mb-2">⭐ Lo que dicen nuestros clientes</span>
+      <h2 class="resenas-title">Experiencias Endulzadas</h2>
+      <p class="resenas-subtitle">Descubre por qué nuestros postres enamoran a todos</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="resena-card h-100">
+          <div class="estrellas">⭐⭐⭐⭐⭐</div>
+          <p class="resena-texto">"Los cupcakes de fresa son simplemente de otro mundo. La masa es super esponjosa y el relleno natural."</p>
+          <div class="cliente-info">
+            <strong>— Lucía M.</strong>
+            <small class="text-muted d-block">Cliente Frecuente</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="resena-card h-100">
+          <div class="estrellas">⭐⭐⭐⭐⭐</div>
+          <p class="resena-texto">"Pedí la Torta Selva Negra para el cumpleaños de mi hermana y fue el éxito de la fiesta. ¡100% recomendados!"</p>
+          <div class="cliente-info">
+            <strong>— Carlos R.</strong>
+            <small class="text-muted d-block">Comprador Verificado</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="resena-card h-100">
+          <div class="estrellas">⭐⭐⭐⭐⭐</div>
+          <p class="resena-texto">"La atención por WhatsApp fue rapidísima y el pedido llegó impecable y súper fresco. Volveré a comprar."</p>
+          <div class="cliente-info">
+            <strong>— Andrea S.</strong>
+            <small class="text-muted d-block">Cliente Satisfecha</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- En tu home.component.html -->
+<div class="text-center mt-5">
+  <a routerLink="/entregas" class="btn btn-outline-resenas">
+    📸 Ver evidencia de entregas y fotos reales
+  </a>
+</div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final text-center py-5">
+  <div class="container">
+    <h2>¿Se te antojó algo dulce? 🎀</h2>
+    <p class="mb-4">Inicia sesión o crea tu cuenta para hacer tu pedido en minutos.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <button (click)="irALogin()" class="btn btn-comprar btn-lg">Iniciar sesión</button>
+      <button (click)="irARegistro()" class="btn btn-outline-registro btn-lg">Registrarme</button>
+    </div>
+  </div>
+</section>
+
+<footer class="footer text-center py-4">
+  <p class="mb-0">© 2026 Azúcar &amp; Amor · Dulces hechos en casa con amor</p>
+</footer>

@@ -1,0 +1,165 @@
+<div class="pedidos-page container py-4">
+  <h1 class="h4 fw-bold mb-3">{{ esAdmin ? '💳 Pedidos y Pagos' : '🧾 Mis pedidos' }}</h1>
+
+  @if (mensajeCancelacion) {
+    <div class="alert-cancelacion">{{ mensajeCancelacion }}</div>
+  }
+
+  @if (cargando) {
+    <p class="estado-msg">Cargando pedidos...</p>
+  }
+
+  @if (error) {
+    <p class="estado-msg error">{{ error }}</p>
+  }
+
+  @if (!cargando && !error) {
+
+    @if (esAdmin) {
+      <!-- VISTA ADMIN: dos listas -->
+      <section class="mb-4">
+        <h2 class="h6 fw-bold">⏳ Pendientes de confirmar pago ({{ pendientes.length }})</h2>
+        @if (pendientes.length === 0) {
+          <p class="estado-msg">No hay pagos pendientes por confirmar.</p>
+        }
+        <div class="row g-3">
+          @for (pedido of pendientes; track pedido.id_venta) {
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="pedido-card pendiente">
+                <div class="pedido-header">
+                  <strong>Pedido #{{ pedido.id_venta }}</strong>
+                  <span class="badge-estado pendiente">Pendiente</span>
+                </div>
+                <p class="mb-1">Cliente: {{ pedido.cliente }}</p>
+                <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+                <p class="mb-1">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+                @if (pedido.comprobante_pago) {
+                  <img [src]="urlComprobante(pedido.comprobante_pago)" alt="Comprobante" class="comprobante-thumb" />
+                } @else if (pedido.metodo_pago === 'Yape/Plin') {
+                  <p class="text-muted"><small>El cliente aún no sube su comprobante.</small></p>
+                } @else {
+                  <p class="text-muted"><small>Sin comprobante (pago {{ pedido.metodo_pago }}) — confirma cuando verifiques el pago.</small></p>
+                }
+                <button
+                  class="btn-confirmar-pago"
+                  [disabled]="(pedido.metodo_pago === 'Yape/Plin' && !pedido.comprobante_pago) || procesandoId === pedido.id_venta"
+                  (click)="confirmarPago(pedido)"
+                >
+                  {{ procesandoId === pedido.id_venta ? 'Confirmando...' : '✅ Confirmar pago' }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h6 fw-bold">✅ Pagados ({{ pagados.length }})</h2>
+        @if (pagados.length === 0) {
+          <p class="estado-msg">Todavía no hay pedidos pagados.</p>
+        }
+        <div class="row g-3">
+          @for (pedido of pagados; track pedido.id_venta) {
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="pedido-card pagado">
+                <div class="pedido-header">
+                  <strong>Pedido #{{ pedido.id_venta }}</strong>
+                  <span class="badge-estado pagado">Pagado</span>
+                </div>
+                <p class="mb-1">Cliente: {{ pedido.cliente }}</p>
+                <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+                <p class="mb-0">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+                <a routerLink="/menu/entregas" class="btn-ir-entregas">📸 Registrar entrega</a>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h2 class="h6 fw-bold">🚫 Cancelados ({{ cancelados.length }})</h2>
+        @if (cancelados.length === 0) {
+          <p class="estado-msg">No hay pedidos cancelados.</p>
+        }
+        <div class="row g-3">
+          @for (pedido of cancelados; track pedido.id_venta) {
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="pedido-card cancelado">
+                <div class="pedido-header">
+                  <strong>Pedido #{{ pedido.id_venta }}</strong>
+                  <span class="badge-estado anulado">Cancelado</span>
+                </div>
+                <p class="mb-1">Cliente: {{ pedido.cliente }}</p>
+                <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+                <p class="mb-0">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+                <button
+                  class="btn-eliminar-cancelado"
+                  [disabled]="procesandoId === pedido.id_venta"
+                  (click)="eliminarCancelado(pedido)"
+                >
+                  {{ procesandoId === pedido.id_venta ? 'Eliminando...' : '🗑️ Eliminar de la lista' }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+    } @else {
+      <!-- VISTA CLIENTE: sus propios pedidos -->
+      @if (pedidos.length === 0) {
+        <p class="estado-msg">Todavía no tienes pedidos.</p>
+      }
+      <div class="row g-3">
+        @for (pedido of pedidos; track pedido.id_venta) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="pedido-card" [class.pendiente]="pedido.estado_venta === 'Pendiente'" [class.pagado]="pedido.estado_venta === 'Completada'" [class.cancelado]="esCancelado(pedido)">
+              <div class="pedido-header">
+                <strong>Pedido #{{ pedido.id_venta }}</strong>
+                <span class="badge-estado" [ngClass]="{
+                  pendiente: pedido.estado_venta === 'Pendiente',
+                  pagado: pedido.estado_venta === 'Completada',
+                  anulado: esCancelado(pedido)
+                }">{{ pedido.estado_venta === 'Pendiente' ? 'Pendiente de pago' : pedido.estado_venta === 'Completada' ? 'Pagado' : 'Cancelado' }}</span>
+              </div>
+              <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+              <p class="mb-1">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+              @if (pedido.comprobante_pago) {
+                <img [src]="urlComprobante(pedido.comprobante_pago)" alt="Comprobante" class="comprobante-thumb" />
+              }
+
+              @if (pedido.estado_venta === 'Pendiente') {
+                <!-- Subir o reemplazar la foto del comprobante en cualquier momento,
+                     no solo justo después de comprar. Disponible para cualquier
+                     método de pago, por si el cliente quiere dejar evidencia. -->
+                <label class="btn-subir-comprobante">
+                  {{ subiendoComprobanteId === pedido.id_venta
+                      ? 'Subiendo...'
+                      : (pedido.comprobante_pago ? '🔄 Reemplazar comprobante' : '📎 Subir comprobante') }}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    [disabled]="subiendoComprobanteId === pedido.id_venta"
+                    (change)="seleccionarComprobantePedido($event, pedido)"
+                  />
+                </label>
+                @if (errorComprobantePorPedido[pedido.id_venta]) {
+                  <p class="text-danger"><small>{{ errorComprobantePorPedido[pedido.id_venta] }}</small></p>
+                }
+
+                <button
+                  class="btn-cancelar-pedido"
+                  [disabled]="procesandoId === pedido.id_venta"
+                  (click)="cancelarPedido(pedido)"
+                >
+                  {{ procesandoId === pedido.id_venta ? 'Cancelando...' : '✕ Cancelar pedido' }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

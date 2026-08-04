@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  background-color: #FFF8F2;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn-volver {
+  display: inline-block;
+  color: #E86A92;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+
+.btn-volver:hover {
+  transform: translateX(-4px);
+}
+
+.titulo-galeria {
+  color: #5A2D2D;
+  font-weight: 800;
+}
+
+.subtitulo-galeria {
+  color: #8a5a5a;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* PANEL ADMIN */
+.card-admin {
+  background: #ffffff;
+  border: 2px dashed #E86A92;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(232, 106, 146, 0.15);
+}
+
+.admin-title {
+  color: #E86A92;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.img-preview {
+  max-height: 180px;
+  border-radius: 12px;
+  border: 2px solid #F8C8D8;
+  object-fit: cover;
+}
+
+.btn-publicar {
+  background: linear-gradient(135deg, #E86A92 0%, #D4AF37 100%);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 0.6rem 2rem;
+  transition: transform 0.15s ease;
+}
+
+.btn-publicar:hover {
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* CARDS DE LA GALERÍA */
+.card-entrega {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #F8C8D8;
+  box-shadow: 0 8px 20px rgba(90, 45, 45, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-entrega:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(232, 106, 146, 0.2);
+}
+
+.img-wrapper {
+  position: relative;
+  height: 220px;
+  width: 100%;
+}
+
+.img-entrega {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-distrito {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(90, 45, 45, 0.85);
+  color: #ffffff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.cliente-nombre {
+  color: #5A2D2D;
+  font-size: 0.95rem;
+}
+
+.fecha-text {
+  color: #8a5a5a;
+  font-size: 0.8rem;
+}

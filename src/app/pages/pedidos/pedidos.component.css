@@ -1,0 +1,115 @@
+.estado-msg {
+  color: #888;
+}
+.estado-msg.error {
+  color: #c0392b;
+}
+
+.alert-cancelacion {
+  background: #fff3f0;
+  border: 1px solid #f3c8bd;
+  color: #a94430;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.pedido-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 1rem;
+  height: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.pedido-card.pendiente { border-left: 4px solid #e8a33d; }
+.pedido-card.pagado { border-left: 4px solid #4caf50; }
+.pedido-card.cancelado { border-left: 4px solid #b0b0b0; opacity: 0.9; }
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.badge-estado {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+.badge-estado.pendiente { background: #fdf1de; color: #b5730c; }
+.badge-estado.pagado { background: #e6f6e8; color: #2f8a3a; }
+.badge-estado.anulado { background: #f1f1f1; color: #777; }
+
+.comprobante-thumb {
+  width: 100%;
+  max-width: 160px;
+  border-radius: 10px;
+  margin: 0.5rem 0;
+  display: block;
+  border: 1px solid #eee;
+}
+
+.btn-confirmar-pago,
+.btn-cancelar-pedido {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.btn-confirmar-pago {
+  background: #4caf50;
+  color: #fff;
+}
+.btn-confirmar-pago:disabled {
+  background: #cfd8cf;
+  cursor: not-allowed;
+}
+.btn-cancelar-pedido {
+  background: #fbe9e7;
+  color: #c0392b;
+}
+
+.btn-ir-entregas {
+  display: inline-block;
+  margin-top: 0.6rem;
+  background: #fdf1de;
+  color: #b5730c;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.btn-eliminar-cancelado {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  background: #f1f1f1;
+  color: #666;
+}
+.btn-eliminar-cancelado:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-subir-comprobante {
+  display: inline-block;
+  border: 1px dashed #c9a35a;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #b5730c;
+  cursor: pointer;
+  margin: 0.4rem 0.5rem 0.4rem 0;
+  background: #fffaf2;
+}
