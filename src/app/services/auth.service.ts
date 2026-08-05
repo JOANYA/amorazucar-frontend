@@ -28,7 +28,8 @@ const STORAGE_KEY = 'azucaryamor_usuario';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/usuarios`;
+  // Forzamos la URL directa de Render para producción en Vercel
+  private apiUrl = 'https://amorazucar-backend.onrender.com/api/usuarios';
 
   private usuarioActualSubject = new BehaviorSubject<Usuario | null>(this.leerUsuarioGuardado());
   usuarioActual$ = this.usuarioActualSubject.asObservable();
