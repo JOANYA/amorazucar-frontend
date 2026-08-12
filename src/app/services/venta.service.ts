@@ -68,7 +68,11 @@ export class VentaService {
   }
 
   /** Arma la URL completa de una imagen guardada en el backend (comprobante o QR) */
-  urlImagen(rutaRelativa: string): string {
-    return `${this.baseArchivos}${rutaRelativa}`;
+   urlImagen(ruta: string): string {
+    if (!ruta) return '';
+    if (/^https?:\/\//i.test(ruta)) {
+      return ruta;
+    }
+    return `${this.baseArchivos}${ruta}`;
   }
 }
