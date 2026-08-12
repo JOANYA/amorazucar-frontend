@@ -56,8 +56,16 @@ subirImagenPostre(id: number, archivo: File): Observable<{ mensaje: string; imag
   return this.http.post<{ mensaje: string; imagen: string }>(`${this.apiUrl}/postres/${id}/imagen`, formData);
 }
 
-/** Arma la URL completa de una imagen guardada en el backend (foto de postre) */
-urlImagen(rutaRelativa: string): string {
-  return `${this.apiUrl.replace(/\/api\/?$/, '')}${rutaRelativa}`;
+/**
+ * Arma la URL completa de una imagen guardada en el backend (foto de postre).
+ * Las fotos de postre ahora vienen como URL absoluta de Cloudinary
+ * (https://res.cloudinary.com/...) -> se devuelven tal cual.
+ */
+urlImagen(ruta: string): string {
+  if (!ruta) return '';
+  if (/^https?:\/\//i.test(ruta)) {
+    return ruta;
+  }
+  return `${this.apiUrl.replace(/\/api\/?$/, '')}${ruta}`;
 }
 }
