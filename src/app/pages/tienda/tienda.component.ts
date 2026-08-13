@@ -170,9 +170,9 @@ export class TiendaComponent implements OnInit {
   }
 
   /** QR de Yape (assets del propio frontend, no cambian dinámicamente) */
-  readonly yapeQrUrl = '/assets/pagos/yape-qr.jpeg';
+  readonly yapeQrUrl = 'src\assets\pagos\yape-qr.jpeg';
   /** QR de Plin */
-  readonly plinQrUrl = '/assets/pagos/plin-qr.jpeg';
+  readonly plinQrUrl = 'src\assets\pagos\plin-qr.jpeg';
 
   cerrarSesion(): void {
     this.authService.logout();
