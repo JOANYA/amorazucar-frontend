@@ -75,4 +75,11 @@ export class VentaService {
     }
     return `${this.baseArchivos}${ruta}`;
   }
+pagarConTarjeta(idVenta: number, tokenId: string, email?: string): Observable<RespuestaSimple & { id_cargo?: string }> {
+    return this.http.post<RespuestaSimple & { id_cargo?: string }>(
+      `${this.apiUrl}/ventas/${idVenta}/pagar-tarjeta`,
+      { token_id: tokenId, email }
+    );
+  }
+
 }
