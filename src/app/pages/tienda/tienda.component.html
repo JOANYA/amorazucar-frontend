@@ -209,16 +209,47 @@
               }
             </button>
           </div>
-        } @else if (esperandoComprobante) {
-          <div class="checkout-comprobante">
-            <h2>📱 Paga con Yape / Plin</h2>
-            <p class="text-muted">
-  Escanea el QR, realiza el pago de 
-  <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong> 
-  y sube la captura de tu pago.
-</p>
 
-            <img [src]="qrPagoUrl" alt="QR de pago Yape/Plin" class="qr-pago-img" />
+        } @else if (esperandoComprobante) {
+
+          <!-- Yape/Plin y Transferencia comparten este mismo paso: mostrar
+               cómo pagar y pedir la foto del comprobante -->
+          <div class="checkout-comprobante">
+
+            @if (metodoPago === 'Yape/Plin') {
+              <h2>📱 Paga con Yape / Plin</h2>
+              <p class="text-muted">
+                Escanea el QR de la app que uses, realiza el pago de
+                <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+                y sube la captura de tu pago.
+              </p>
+
+              <div class="qr-pagos-grupo d-flex gap-3 justify-content-center flex-wrap">
+                <div class="text-center">
+                  <img [src]="yapeQrUrl" alt="QR de pago Yape" class="qr-pago-img" />
+                  <p class="small text-muted mt-1 mb-0">Yape</p>
+                </div>
+                <div class="text-center">
+                  <img [src]="plinQrUrl" alt="QR de pago Plin" class="qr-pago-img" />
+                  <p class="small text-muted mt-1 mb-0">Plin</p>
+                </div>
+              </div>
+            } @else {
+              <h2>🏦 Paga por Transferencia / Banca Móvil</h2>
+              <p class="text-muted">
+                Realiza la transferencia de
+                <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+                desde tu banca móvil a esta cuenta, y sube la captura de tu operación.
+              </p>
+
+              <div class="datos-bancarios text-start mx-auto" style="max-width: 320px;">
+                <p class="mb-1"><strong>Banco:</strong> {{ datosBancarios.banco }}</p>
+                <p class="mb-1"><strong>Tipo de cuenta:</strong> {{ datosBancarios.tipoCuenta }}</p>
+                <p class="mb-1"><strong>N° de cuenta:</strong> {{ datosBancarios.numeroCuenta }}</p>
+                <p class="mb-1"><strong>CCI:</strong> {{ datosBancarios.cci }}</p>
+                <p class="mb-0"><strong>Titular:</strong> {{ datosBancarios.titular }}</p>
+              </div>
+            }
 
             <div class="field mt-3">
               <label for="comprobante" class="form-label fw-bold">Foto del comprobante *</label>
@@ -247,6 +278,37 @@
             </div>
             <p class="text-muted mt-2"><small>Tu pedido quedará <strong>pendiente de pago</strong> hasta que confirmemos tu comprobante.</small></p>
           </div>
+
+        } @else if (metodoPago === 'Tarjeta' && !pagoTarjetaCompletado) {
+
+          <!-- Pago con tarjeta: el widget de Culqi ya se abrió solo al
+               llegar aquí (ver abrirCulqiCheckout() en el componente).
+               Este bloque es lo que se ve DETRÁS de ese widget, y lo que
+               queda si el cliente lo cierra sin terminar (puede reintentar). -->
+          <div class="checkout-comprobante text-center">
+            <h2>💳 Pago con tarjeta</h2>
+
+            @if (pagandoConTarjeta) {
+              <p class="text-muted"><span class="spinner"></span> Esperando el pago...</p>
+            } @else {
+              @if (errorPagoTarjeta) {
+                <div class="checkout-error">{{ errorPagoTarjeta }}</div>
+              }
+              <p class="text-muted">
+                Total a pagar: <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+              </p>
+              <button class="btn-confirmar" (click)="abrirCulqiCheckout()">
+                Ingresar datos de la tarjeta
+              </button>
+            }
+
+            <div class="checkout-acciones mt-3">
+              <button class="btn-secundario" (click)="cerrarConfirmacion()" [disabled]="pagandoConTarjeta">
+                Cancelar
+              </button>
+            </div>
+          </div>
+
         } @else {
           <div class="checkout-exito">
             <div class="exito-icono">✅</div>
@@ -255,7 +317,11 @@
   Total <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
 </p>
             <p class="text-muted">Pedido #{{ compraExitosa.idVenta }} registrado correctamente.</p>
-            <p class="text-muted"><small>Tu pedido está <strong>pendiente de confirmación de pago</strong>. Te avisaremos cuando quede confirmado.</small></p>
+            @if (metodoPago === 'Tarjeta') {
+              <p class="text-muted"><small>Tu pago con tarjeta fue <strong>confirmado</strong>. ¡Gracias por tu compra!</small></p>
+            } @else {
+              <p class="text-muted"><small>Tu pedido está <strong>pendiente de confirmación de pago</strong>. Te avisaremos cuando quede confirmado.</small></p>
+            }
             <button class="btn-confirmar" (click)="cerrarConfirmacion()">Seguir comprando</button>
           </div>
         }

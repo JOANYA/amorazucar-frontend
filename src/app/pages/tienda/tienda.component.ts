@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { catchError, of, tap } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import { CatalogoService } from '../../services/catalogo.service';
 import { CarritoService } from '../../services/carrito.service';
 import { VentaService } from '../../services/venta.service';
@@ -11,6 +12,13 @@ import { AuthService } from '../../services/auth.service';
 import { CategoriaService, Categoria } from '../../services/categoria.service';
 import { Postre } from '../../models/catalogo.model';
 import { ItemCarrito, MetodoPago } from '../../models/venta.model';
+
+// El widget de Culqi Checkout (cargado en index.html vía <script src="https://checkout.culqi.com/js/v3">)
+// se engancha al objeto global `Culqi` y llama a una función global llamada
+// `culqi()` cuando el cliente termina de llenar el formulario de tarjeta
+// (éxito o error). declare var evita que TypeScript se queje de que no
+// conoce estos globales.
+declare var Culqi: any;
 
 @Component({
   selector: 'app-tienda',
@@ -34,12 +42,26 @@ export class TiendaComponent implements OnInit {
   compraExitosa: { idVenta: number; montoTotal: number } | null = null;
   errorCompra = '';
 
-  // --- Paso de comprobante (solo Yape/Plin) ---
+  // --- Paso de comprobante (Yape/Plin Y Transferencia comparten este flujo) ---
   esperandoComprobante = false; // true = venta creada, falta subir la foto del pago
   archivoComprobante: File | null = null;
   previsualizacionComprobante = '';
   subiendoComprobante = false;
   errorComprobante = '';
+
+  /** Datos de tu cuenta para que el cliente haga la transferencia desde su banca móvil. */
+  datosBancarios = {
+    banco: 'BCP',
+    tipoCuenta: 'Cuenta de Ahorros',
+    numeroCuenta: '000-00000000-0-00',
+    cci: '00200000000000000000',
+    titular: 'Azúcar & Amor'
+  };
+
+  // --- Paso de pago con tarjeta (Culqi) ---
+  pagandoConTarjeta = false;
+  pagoTarjetaCompletado = false;
+  errorPagoTarjeta = '';
 
   // --- Estado del Módulo Admin (Crear / Editar Postre) ---
   mostrarModalCrear = false;
@@ -147,10 +169,10 @@ export class TiendaComponent implements OnInit {
     return this.authService.esAdmin();
   }
 
-  /** Ruta del QR que el admin debe colocar en backend/public/images/qr-pago.png */
-  get qrPagoUrl(): string {
-    return this.ventaService.urlImagen('/images/qr-pago.png');
-  }
+  /** QR de Yape (assets del propio frontend, no cambian dinámicamente) */
+  readonly yapeQrUrl = 'assets/pagos/yape-qr.jpeg';
+  /** QR de Plin */
+  readonly plinQrUrl = 'assets/pagos/plin-qr.jpeg';
 
   cerrarSesion(): void {
     this.authService.logout();
@@ -199,13 +221,19 @@ export class TiendaComponent implements OnInit {
             montoTotal: respuesta.data.monto_total
           };
           this.carritoService.vaciar();
-          // Ahora TODOS los métodos de pago quedan "Pendiente" hasta que el
-          // admin confirme manualmente (efectivo contra-entrega, tarjeta,
-          // transferencia, Yape/Plin). Solo Yape/Plin muestra el paso extra
-          // de escanear el QR y subir la foto del comprobante; los demás
-          // van directo a la pantalla de "pedido registrado, pendiente de
-          // confirmación de pago".
-          this.esperandoComprobante = this.metodoPago === 'Yape/Plin';
+
+          // El pedido siempre queda "Pendiente" al crearse. Lo que cambia
+          // es el siguiente paso según el método de pago:
+          if (this.metodoPago === 'Yape/Plin' || this.metodoPago === 'Transferencia') {
+            // Ambos comparten el mismo flujo: mostrar cómo pagar (QR o
+            // datos bancarios) y pedir la foto del comprobante.
+            this.esperandoComprobante = true;
+          } else if (this.metodoPago === 'Tarjeta') {
+            // Cobro real e inmediato con Culqi.
+            this.abrirCulqiCheckout();
+          }
+          // Efectivo: no hace falta ningún paso extra, cae directo a la
+          // pantalla de "pedido registrado, pendiente de confirmación".
         }),
         catchError((err) => {
           this.errorCompra =
@@ -218,7 +246,53 @@ export class TiendaComponent implements OnInit {
       });
   }
 
-  // --- Comprobante de pago (Yape/Plin) ---
+  // --- Pago con tarjeta (Culqi) ---
+  abrirCulqiCheckout(): void {
+    if (!this.compraExitosa) return;
+    this.errorPagoTarjeta = '';
+    this.pagandoConTarjeta = true;
+
+    Culqi.publicKey = environment.culqiPublicKey;
+    Culqi.settings({
+      title: 'Azúcar & Amor',
+      currency: 'PEN',
+      description: `Pedido #${this.compraExitosa.idVenta}`,
+      amount: Math.round(this.compraExitosa.montoTotal * 100) // Culqi usa céntimos
+    });
+
+    // Culqi v3 llama a esta función global cuando el cliente termina de
+    // llenar el formulario (éxito o error) -- se re-asigna cada vez que se
+    // abre el checkout para que "recuerde" a qué pedido corresponde.
+    (window as any).culqi = () => this.manejarRespuestaCulqi();
+
+    Culqi.open();
+  }
+
+  private manejarRespuestaCulqi(): void {
+    if (Culqi.token) {
+      const tokenId = Culqi.token.id;
+      const email = Culqi.token.email;
+
+      this.ventaService.pagarConTarjeta(this.compraExitosa!.idVenta, tokenId, email).subscribe({
+        next: () => {
+          this.pagandoConTarjeta = false;
+          this.pagoTarjetaCompletado = true;
+        },
+        error: (err) => {
+          this.pagandoConTarjeta = false;
+          this.errorPagoTarjeta = err.error?.message || 'No se pudo procesar el pago. Intenta de nuevo.';
+        }
+      });
+    } else {
+      // El cliente cerró el formulario de Culqi sin terminar, o la tarjeta
+      // no pasó las validaciones del propio formulario (Culqi.error trae
+      // el detalle). El pedido sigue "Pendiente" -- puede reintentar.
+      this.pagandoConTarjeta = false;
+      this.errorPagoTarjeta = Culqi.error?.user_message || 'No se completó el pago. Puedes intentar de nuevo.';
+    }
+  }
+
+  // --- Comprobante de pago (Yape/Plin y Transferencia) ---
   seleccionarComprobante(event: Event): void {
     const input = event.target as HTMLInputElement;
     const archivo = input.files?.[0] ?? null;
@@ -263,6 +337,9 @@ export class TiendaComponent implements OnInit {
     this.archivoComprobante = null;
     this.previsualizacionComprobante = '';
     this.errorComprobante = '';
+    this.pagandoConTarjeta = false;
+    this.pagoTarjetaCompletado = false;
+    this.errorPagoTarjeta = '';
     this.cargarPostres();
   }
 
