@@ -484,8 +484,9 @@
 }
 
 .qr-pago-img {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
   object-fit: contain;
   border: 1px solid #eee;
   border-radius: 12px;
