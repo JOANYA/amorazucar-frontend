@@ -35,14 +35,14 @@
                 <p class="mb-1">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
                 @if (pedido.comprobante_pago) {
                   <img [src]="urlComprobante(pedido.comprobante_pago)" alt="Comprobante" class="comprobante-thumb" />
-                } @else if (pedido.metodo_pago === 'Yape/Plin') {
+                } @else if (pedido.metodo_pago === 'Yape' || pedido.metodo_pago === 'Plin') {
                   <p class="text-muted"><small>El cliente aún no sube su comprobante.</small></p>
                 } @else {
                   <p class="text-muted"><small>Sin comprobante (pago {{ pedido.metodo_pago }}) — confirma cuando verifiques el pago.</small></p>
                 }
                 <button
                   class="btn-confirmar-pago"
-                  [disabled]="(pedido.metodo_pago === 'Yape/Plin' && !pedido.comprobante_pago) || procesandoId === pedido.id_venta"
+                  [disabled]="((pedido.metodo_pago === 'Yape' || pedido.metodo_pago === 'Plin') && !pedido.comprobante_pago) || procesandoId === pedido.id_venta"
                   (click)="confirmarPago(pedido)"
                 >
                   {{ procesandoId === pedido.id_venta ? 'Confirmando...' : '✅ Confirmar pago' }}
