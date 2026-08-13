@@ -37,7 +37,7 @@ export class TiendaComponent implements OnInit {
   carrito: ItemCarrito[] = [];
   mostrarCarrito = false;
   mostrarCheckout = false;
-  metodoPago: MetodoPago = 'Yape/Plin';
+  metodoPago: MetodoPago = 'Yape';
   procesandoCompra = false;
   compraExitosa: { idVenta: number; montoTotal: number } | null = null;
   errorCompra = '';
@@ -224,9 +224,10 @@ export class TiendaComponent implements OnInit {
 
           // El pedido siempre queda "Pendiente" al crearse. Lo que cambia
           // es el siguiente paso según el método de pago:
-          if (this.metodoPago === 'Yape/Plin' || this.metodoPago === 'Transferencia') {
-            // Ambos comparten el mismo flujo: mostrar cómo pagar (QR o
-            // datos bancarios) y pedir la foto del comprobante.
+          if (this.metodoPago === 'Yape' || this.metodoPago === 'Plin' || this.metodoPago === 'Transferencia') {
+            // Los tres comparten el mismo flujo: mostrar cómo pagar (el QR
+            // que corresponda, o los datos bancarios) y pedir la foto del
+            // comprobante.
             this.esperandoComprobante = true;
           } else if (this.metodoPago === 'Tarjeta') {
             // Cobro real e inmediato con Culqi.

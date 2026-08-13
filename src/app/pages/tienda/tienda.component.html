@@ -174,9 +174,13 @@
           <div class="metodo-pago-section">
             <label>Método de pago</label>
             <div class="metodo-pago-opciones">
-              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Yape/Plin'">
-                <input type="radio" name="metodoPago" value="Yape/Plin" [(ngModel)]="metodoPago" />
-                📱 Yape / Plin
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Yape'">
+                <input type="radio" name="metodoPago" value="Yape" [(ngModel)]="metodoPago" />
+                📱 Yape
+              </label>
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Plin'">
+                <input type="radio" name="metodoPago" value="Plin" [(ngModel)]="metodoPago" />
+                📱 Plin
               </label>
               <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Tarjeta'">
                 <input type="radio" name="metodoPago" value="Tarjeta" [(ngModel)]="metodoPago" />
@@ -216,24 +220,22 @@
                cómo pagar y pedir la foto del comprobante -->
           <div class="checkout-comprobante">
 
-            @if (metodoPago === 'Yape/Plin') {
-              <h2>📱 Paga con Yape / Plin</h2>
+            @if (metodoPago === 'Yape') {
+              <h2>📱 Paga con Yape</h2>
               <p class="text-muted">
-                Escanea el QR de la app que uses, realiza el pago de
+                Escanea el QR con tu app de Yape, realiza el pago de
                 <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
                 y sube la captura de tu pago.
               </p>
-
-              <div class="qr-pagos-grupo d-flex gap-3 justify-content-center flex-wrap">
-                <div class="text-center">
-                  <img [src]="yapeQrUrl" alt="QR de pago Yape" class="qr-pago-img" />
-                  <p class="small text-muted mt-1 mb-0">Yape</p>
-                </div>
-                <div class="text-center">
-                  <img [src]="plinQrUrl" alt="QR de pago Plin" class="qr-pago-img" />
-                  <p class="small text-muted mt-1 mb-0">Plin</p>
-                </div>
-              </div>
+              <img [src]="yapeQrUrl" alt="QR de pago Yape" class="qr-pago-img" />
+            } @else if (metodoPago === 'Plin') {
+              <h2>📱 Paga con Plin</h2>
+              <p class="text-muted">
+                Escanea el QR con tu app de Plin, realiza el pago de
+                <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+                y sube la captura de tu pago.
+              </p>
+              <img [src]="plinQrUrl" alt="QR de pago Plin" class="qr-pago-img" />
             } @else {
               <h2>🏦 Paga por Transferencia / Banca Móvil</h2>
               <p class="text-muted">
