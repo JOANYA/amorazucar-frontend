@@ -1,7 +1,7 @@
 import { Postre } from './catalogo.model';
 
 /** Debe coincidir con el ENUM metodo_pago de la tabla Venta */
-export type MetodoPago = 'Efectivo' | 'Tarjeta' | 'Transferencia' | 'Yape/Plin';
+export type MetodoPago = 'Efectivo' | 'Tarjeta' | 'Transferencia' | 'Yape' | 'Plin';
 
 export interface ItemCarrito {
   postre: Postre;
