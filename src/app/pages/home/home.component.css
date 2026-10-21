@@ -1,0 +1,607 @@
+/* ===== NAVBAR SUPERIOR DINÁMICO ===== */
+/*
+ * Se queda fija arriba al hacer scroll, igual que la barra de la tienda: los
+ * accesos a Iniciar sesión / Registrarse (o al menú, si ya hay sesión) siguen
+ * disponibles sin volver al principio de la página.
+ */
+.navbar-tienda {
+  background-color: #5A2D2D; /* Tono marrón distintivo de Azúcar & Amor */
+  box-shadow: 0 4px 15px rgba(90, 45, 45, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+/* Los iconos heredan el color del texto de la barra */
+.navbar-tienda app-icono {
+  color: inherit;
+}
+
+.navbar-brand {
+  font-size: 1.3rem;
+  color: #FFF8F2 !important;
+  transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.02);
+}
+
+/* Saludo de usuario dinámico */
+.user-greeting {
+  color: #FFF8F2;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Badge de Administrador */
+.badge-admin {
+  background-color: #D4AF37;
+  color: #5A2D2D;
+  font-weight: 700;
+  padding: 0.35em 0.65em;
+  border-radius: 20px;
+}
+
+/* Botón "Cerrar Sesión" estilizado */
+.btn-logout {
+  background-color: #E86A92;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  padding: 0.35rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background-color: #d1517a;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Estilos de botones Iniciar Sesión / Registrarse en el Navbar */
+.navbar-tienda .btn-outline-light {
+  color: #FFF8F2;
+  border-color: #F8C8D8;
+}
+
+.navbar-tienda .btn-outline-light:hover {
+  background-color: #E86A92;
+  border-color: #E86A92;
+  color: #ffffff;
+}
+
+.navbar-tienda .btn-light {
+  background-color: #F8C8D8;
+  color: #5A2D2D;
+  border: none;
+  font-weight: 600;
+}
+
+.navbar-tienda .btn-light:hover {
+  background-color: #FFF8F2;
+  color: #5A2D2D;
+}
+
+
+
+:host {
+  display: block;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* `clip` y NO `hidden`: con `hidden` este contenedor se convierte en
+     contenedor de scroll y la barra fija (position: sticky) dejaba de
+     funcionar. Con `clip` se recorta igual, sin romper el sticky. */
+  overflow-x: clip;
+}
+
+/* ===== BARRA DE CONTACTO SUPERIOR (TOP BAR) ===== */
+.top-bar {
+  background-color: #FFF2F5;
+  border-bottom: 1px solid #F8C8D8;
+  font-size: 0.9rem;
+}
+
+.whatsapp-link {
+  color: #0f766e; /* 5.0:1 AA sobre #FFF2F5 (el #25D366 anterior daba 1.8:1 y el #128C7E 3.8:1, ambos fallan) */
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.whatsapp-link:hover {
+  transform: scale(1.03);
+  color: #0b5d57; /* 7.1:1 AA sobre #FFF2F5 */
+}
+
+.social-icon {
+  color: #5A2D2D;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.social-icon:hover {
+  color: #C2416B;
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  background: linear-gradient(160deg, #FFF8F2 0%, #FDEAF0 55%, #FBE3EC 100%);
+  overflow: hidden;
+  padding: 4.5rem 0 5rem;
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hero-blob-1 {
+  width: 420px;
+  height: 420px;
+  top: -140px;
+  right: -120px;
+  background: radial-gradient(circle, #E86A92 0%, transparent 70%);
+}
+
+.hero-blob-2 {
+  width: 360px;
+  height: 360px;
+  bottom: -140px;
+  left: -100px;
+  background: radial-gradient(circle, #D4AF37 0%, transparent 70%);
+}
+
+/* ---- Columna de texto ---- */
+.hero-texto {
+  text-align: left;
+}
+
+.hero-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #ffffff;
+  border: 1px solid #F8C8D8;
+  color: #8A6A16; /* 5.0:1 AA sobre blanco */
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 10px rgba(90, 45, 45, 0.06);
+}
+
+.hero-title {
+  font-size: clamp(2rem, 1.3rem + 2.6vw, 3.3rem);
+  font-weight: 800;
+  color: #5A2D2D;
+  line-height: 1.12;
+  margin-bottom: 1.1rem;
+  letter-spacing: -0.5px;
+}
+
+/* #C2416B sobre el fondo claro del hero = 4.8:1 (AA) */
+.hero-title-destacado {
+  color: #C2416B;
+}
+
+.hero-subtitle {
+  color: #6b4a4a; /* 5.4:1 AA sobre #FFF8F2 */
+  font-size: 1.08rem;
+  line-height: 1.6;
+  max-width: 33rem;
+  margin-bottom: 1.9rem;
+}
+
+.hero-acciones {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ---- Señales de confianza ---- */
+.hero-confianza {
+  list-style: none;
+  padding: 0;
+  margin: 2.2rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.2rem;
+  max-width: 34rem;
+}
+
+.hero-confianza li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.confianza-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #F8C8D8;
+  color: #C2416B;
+}
+
+.hero-confianza strong {
+  display: block;
+  color: #5A2D2D;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.hero-confianza small {
+  display: block;
+  color: #6b4a4a;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+/* ---- Columna visual: producto real ---- */
+.hero-collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.hero-collage.con-dos {
+  grid-template-columns: 1fr;
+}
+
+.collage-pieza {
+  position: relative;
+  display: block;
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 14px 30px rgba(90, 45, 45, 0.16);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.collage-pieza:hover,
+.collage-pieza:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 38px rgba(90, 45, 45, 0.22);
+}
+
+.collage-pieza img {
+  display: block;
+  width: 100%;
+  height: 215px;
+  object-fit: cover;
+}
+
+/* La primera pieza ocupa las dos columnas y destaca más */
+.collage-pieza:first-child {
+  grid-column: span 2;
+}
+
+.hero-collage.con-dos .collage-pieza:first-child {
+  grid-column: span 1;
+}
+
+.collage-pieza:first-child img {
+  height: 260px;
+}
+
+.collage-nombre {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  border-radius: 10px;
+  padding: 1.4rem 0.5rem 0.35rem;
+}
+
+.collage-sin-foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 215px;
+  background: #FFF3F6;
+  color: #C2416B;
+}
+
+.hero-cargando {
+  color: #6b4a4a;
+}
+
+/* Cuando todavía no hay productos publicados */
+.hero-sin-productos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 260px;
+  border: 2px dashed #F8C8D8;
+  border-radius: 22px;
+  background: #ffffff;
+  color: #5A2D2D;
+  text-decoration: none;
+  padding: 2rem;
+  text-align: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-sin-productos:hover {
+  border-color: #C2416B;
+  transform: translateY(-3px);
+}
+
+.hero-sin-productos app-icono {
+  color: #C2416B;
+}
+
+.hero-sin-productos small {
+  color: #6b4a4a;
+}
+
+.btn-comprar {
+  /* Degradado oscurecido: blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA)
+     El degradado de marca original daba 2.1:1 - 3.0:1 */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.85rem 2.2rem;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(232, 106, 146, 0.35);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-comprar:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  color: #fff;
+}
+
+.btn-outline-registro {
+  background: transparent;
+  color: #5A2D2D;
+  border: 2px solid #5A2D2D;
+  border-radius: 50px;
+  padding: 0.8rem 2rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.btn-outline-registro:hover {
+  background: #5A2D2D;
+  color: #fff;
+}
+
+/* ===== CATÁLOGO DESTACADO ===== */
+.catalogo {
+  background: #FFF8F2;
+}
+
+.catalogo-title {
+  color: #5A2D2D;
+  font-weight: 800;
+  font-size: 2rem;
+}
+
+.catalogo-subtitle {
+  color: #8a5a5a;
+}
+
+.postre-card {
+  background: #ffffff;
+  border: 2px solid #F8C8D8;
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(90, 45, 45, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postre-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(232, 106, 146, 0.2);
+}
+
+.postre-icono {
+  font-size: 3.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.postre-foto {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 0.75rem;
+}
+
+.postre-nombre {
+  color: #5A2D2D;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.postre-resena {
+  color: #8a5a5a;
+  font-size: 0.9rem;
+  min-height: 60px;
+}
+
+.postre-precio {
+  color: #8A6A16; /* 5.1:1 AA sobre blanco (el dorado #D4AF37 daba 2.0:1) */
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.btn-comprar-sm {
+  /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA) */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-comprar-sm:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* ===== SECCIÓN DE RESEÑAS Y OPINIONES ===== */
+.resenas-section {
+  background: #FFF8F2;
+  border-top: 2px dashed #F8C8D8;
+  border-bottom: 2px dashed #F8C8D8;
+}
+
+.badge-resenas {
+  background: #F8C8D8;
+  color: #5A2D2D;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+}
+
+.resenas-title {
+  color: #5A2D2D;
+  font-weight: 800;
+  font-size: 2.2rem;
+}
+
+.resenas-subtitle {
+  color: #8a5a5a;
+}
+
+.resena-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.8rem;
+  box-shadow: 0 8px 20px rgba(90, 45, 45, 0.05);
+  border: 1px solid #FDEAF0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.estrellas {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.resena-texto {
+  color: #5A2D2D;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.cliente-info strong {
+  color: #C2416B;
+}
+
+.btn-outline-resenas {
+  border: 2px solid #E86A92;
+  color: #C2416B;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 0.6rem 1.8rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-outline-resenas:hover {
+  background-color: #E86A92;
+  color: #ffffff;
+}
+
+/* ===== CTA FINAL ===== */
+.cta-final {
+  background: linear-gradient(135deg, #F8C8D8 0%, #FFF8F2 100%);
+  color: #5A2D2D;
+}
+
+.cta-final h2 {
+  font-weight: 800;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #5A2D2D;
+  color: #FFF8F2;
+  font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE MEDIA QUERIES ===== */
+
+/* Tablet y móvil: el hero pasa a una sola columna y se centra el texto */
+@media (max-width: 991.98px) {
+  .hero {
+    padding: 3rem 0 3.5rem;
+  }
+
+  .hero-texto {
+    text-align: center;
+  }
+
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-acciones {
+    justify-content: center;
+  }
+
+  .hero-confianza {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero {
+    padding: 2.25rem 0 2.75rem;
+  }
+
+  /* Una sola columna de señales: en 360px no caben dos sin apretarse */
+  .hero-confianza {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .hero-acciones .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .collage-pieza img,
+  .collage-pieza:first-child img {
+    height: 170px;
+  }
+}

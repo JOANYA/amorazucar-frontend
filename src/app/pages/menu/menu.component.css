@@ -1,0 +1,320 @@
+:host {
+  display: block;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.menu-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #FFF8F2;
+  /* overflow-x: clip (no "hidden") porque "hidden" convierte al shell en
+     contenedor de scroll y romperia el position: sticky del sidebar */
+  overflow-x: clip;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  /* Degradado oscurecido: el texto blanco del sidebar da 4.9:1 arriba y 5.2:1
+     abajo del rail (AA). El degradado de marca original daba 2.1:1 - 3.0:1 */
+  background: linear-gradient(180deg, #C2416B 0%, #8A6A16 130%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-cerrado .sidebar {
+  width: 72px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.2rem 1rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.brand-icono {
+  font-size: 1.4rem;
+}
+
+.sidebar-usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.datos-usuario {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.datos-usuario .nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.datos-usuario .rol {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  padding: 0.1rem 0.5rem;
+  width: fit-content;
+  margin-top: 0.2rem;
+}
+
+.notificaciones-wrapper {
+  position: relative;
+  padding: 0 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-campana {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 0.7rem 0.4rem;
+  cursor: pointer;
+  position: relative;
+  font-size: 0.85rem;
+}
+
+.badge-no-leidas {
+  position: absolute;
+  top: 4px;
+  left: 22px;
+  background: #a4262c;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+  min-width: 16px;
+  text-align: center;
+}
+
+.panel-notificaciones {
+  position: absolute;
+  top: 100%;
+  left: 0.5rem;
+  z-index: 20;
+  background: #fff;
+  color: #333;
+  width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 0.5rem;
+}
+
+.sin-notificaciones {
+  color: #6b6b6b;
+  font-size: 0.85rem;
+  padding: 0.6rem;
+  margin: 0;
+}
+
+/* Es un <button> en el HTML: se resetean los estilos nativos del boton
+   manteniendo la misma apariencia que tenia el <div> original */
+.notificacion-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.notificacion-item:hover {
+  background: #f7f7f7;
+}
+.notificacion-item.no-leida {
+  background: #fff6ea;
+  font-weight: 600;
+}
+.notificacion-item .mensaje {
+  display: block;
+  margin: 0 0 0.2rem 0;
+  font-size: 0.85rem;
+}
+.notificacion-item .fecha {
+  color: #6b6b6b;
+  font-size: 0.7rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.nav-item .icono {
+  font-size: 1.1rem;
+  width: 1.4rem;
+  text-align: center;
+}
+
+.nav-item:hover {
+  /* Overlay oscuro (no blanco): el blanco translucido sobre el degradado
+     bajaba el contraste del texto a ~2.9:1 */
+  background: rgba(0, 0, 0, 0.14); /* texto blanco 6.3:1 - 6.5:1 AA */
+  color: #fff;
+}
+
+.nav-item.activo {
+  background: rgba(0, 0, 0, 0.26); /* texto blanco 7.7:1 - 8.0:1 AA */
+  font-weight: 700;
+}
+
+.nav-separador {
+  margin: 0.75rem 0 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 1; /* opacidad completa para mantener el contraste AA */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-footer {
+  padding: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cerrar-sesion-btn:hover {
+  background: rgba(220, 53, 69, 0.5);
+}
+
+/* ===== CONTENIDO ===== */
+/*
+ * IMPORTANTE: aquí va `overflow-x: clip` y NO `hidden`.
+ * `hidden` convierte este contenedor en un contenedor de scroll, y entonces
+ * cualquier `position: sticky` de dentro (como la barra de la tienda) se pega
+ * a ESTE contenedor en lugar de a la ventana: la barra se iba hacia arriba al
+ * hacer scroll y desaparecía. `clip` recorta igual pero sin crear scroll.
+ */
+.menu-contenido {
+  flex: 1;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+/* ===== RESPONSIVE: SIDEBAR EN MOVIL =====
+   En pantallas <= 768px el sidebar se convierte en un rail de iconos de 72px
+   (mismo ancho que el estado colapsado de escritorio) y se ocultan los textos
+   para que el contenido no se recorte. Se mantiene position: sticky (nada de
+   position: fixed). */
+@media (max-width: 768px) {
+  /* Abierto y cerrado comparten el mismo ancho: solo iconos */
+  .sidebar,
+  .sidebar-cerrado .sidebar {
+    width: 72px;
+  }
+
+  /* Textos ocultos (clases reales del HTML) */
+  .sidebar .nav-texto,
+  .sidebar .sidebar-brand .brand-texto,
+  .sidebar .datos-usuario,
+  .sidebar .nav-separador {
+    display: none;
+  }
+
+  /* Todo centrado en el rail */
+  .sidebar .sidebar-brand,
+  .sidebar .sidebar-usuario {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .sidebar .notificaciones-wrapper {
+    padding: 0 0.25rem;
+  }
+
+  .sidebar .btn-campana {
+    justify-content: center;
+    gap: 0;
+    padding: 0.7rem 0;
+  }
+
+  .sidebar .sidebar-nav {
+    padding: 0.75rem 0.35rem;
+  }
+
+  .sidebar .nav-item {
+    justify-content: center;
+    gap: 0;
+    padding: 0.6rem 0.25rem;
+  }
+
+  /* El panel de notificaciones no debe desbordar el viewport */
+  .panel-notificaciones {
+    width: min(280px, calc(100vw - 88px));
+  }
+}

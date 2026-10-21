@@ -1,0 +1,12 @@
+# Salida del build (se regenera con ng build)
+/dist
+
+# Dependencias
+/node_modules
+
+# Caché del CLI de Angular
+.angular/
+
+# Cobertura y reportes de pruebas (se generan en ../reports/)
+/coverage/
+/test-results/

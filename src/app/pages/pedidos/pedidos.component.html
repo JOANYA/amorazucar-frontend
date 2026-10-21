@@ -1,0 +1,342 @@
+<!-- ACCESIBILIDAD: <main> (landmark principal de la página). -->
+<main class="pedidos-page container py-4">
+  <h1 class="h4 fw-bold mb-3 titulo-con-icono"><app-icono [nombre]="esAdmin ? 'CreditCard' : 'Receipt'" [tamano]="22" />{{ esAdmin ? 'Pedidos y Pagos' : 'Mis pedidos' }}</h1>
+
+  @if (mensajeExito) {
+    <div class="alert-exito" role="status">{{ mensajeExito }}</div>
+  }
+
+  @if (mensajeError) {
+    <div class="alert-cancelacion" role="alert">{{ mensajeError }}</div>
+  }
+
+  @if (mensajeCancelacion) {
+    <div class="alert-cancelacion" role="alert">{{ mensajeCancelacion }}</div>
+  }
+
+  <!--
+    Confirmación en línea: sustituye a los diálogos nativos confirm().
+    Se muestra UNA vez por acción, dentro de la tarjeta del pedido (ver
+    `.confirmacion-inline`). Antes había además un panel arriba de la página con
+    la misma pregunta y otras palabras, así que al pulsar "Confirmar pago"
+    aparecían dos confirmaciones distintas para lo mismo; además ese panel
+    quedaba fuera de pantalla si el admin estaba mirando una tarjeta de abajo.
+  -->
+
+  @if (cargando) {
+    <p class="estado-msg">Cargando pedidos...</p>
+  }
+
+  @if (error) {
+    <p class="estado-msg error">{{ error }}</p>
+  }
+
+  @if (!cargando && !error) {
+
+    @if (esAdmin) {
+      <!-- VISTA ADMIN: dos listas -->
+      <section class="mb-4">
+        <h2 class="h6 fw-bold titulo-con-icono"><app-icono nombre="Hourglass" [tamano]="18" />Pendientes de confirmar pago ({{ pendientes.length }})</h2>
+        @if (pendientes.length === 0) {
+          <p class="estado-msg">No hay pagos pendientes por confirmar.</p>
+        }
+        <div class="row g-3">
+          @for (pedido of pendientes; track pedido.id_venta) {
+            <!-- Dos columnas en pantallas grandes: antes eran tres columnas
+                 estrechas que dejaban mucho espacio sin usar -->
+            <div class="col-12 col-md-6 col-lg-6">
+              <div class="pedido-card pendiente">
+                <div class="pedido-header">
+                  <strong>Pedido #{{ pedido.id_venta }}</strong>
+                  <span class="badge-estado pendiente">Pendiente</span>
+                </div>
+                <p class="mb-1">Cliente: {{ pedido.cliente }}</p>
+                <app-direccion-entrega
+                  [direccion]="pedido.direccion_entrega"
+                  [latitud]="pedido.latitud_entrega"
+                  [longitud]="pedido.longitud_entrega"
+                  [telefono]="pedido.telefono_cliente"
+                />
+                <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+                <p class="mb-1">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+                @if (tieneUbicacion(pedido)) {
+                  <button type="button" class="btn-ver-detalle" [attr.aria-expanded]="seguimientoAbierto === pedido.id_venta" (click)="alternarSeguimiento(pedido.id_venta)">
+                    <app-icono nombre="Motorcycle" [tamano]="14" />{{ seguimientoAbierto === pedido.id_venta ? 'Ocultar ruta de entrega' : 'Entrega y ruta' }}@if (pedido.estado_entrega === 'En camino') { (en camino) }
+                  </button>
+                  @if (seguimientoAbierto === pedido.id_venta) {
+                    <app-seguimiento-entrega [idVenta]="pedido.id_venta" modo="admin" />
+                  }
+                }
+                @if (pedido.comprobante_pago) {
+                  <img
+                    [src]="urlComprobante(pedido.comprobante_pago)"
+                    alt="Comprobante del pedido #{{ pedido.id_venta }}"
+                    class="comprobante-thumb"
+                    width="160"
+                    height="160"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                } @else if (pedido.metodo_pago === 'Yape' || pedido.metodo_pago === 'Plin') {
+                  <p class="text-muted"><small>El cliente aún no sube su comprobante.</small></p>
+                } @else {
+                  <p class="text-muted"><small>Sin comprobante (pago {{ pedido.metodo_pago }}) — confirma cuando verifiques el pago.</small></p>
+                }
+                @if (estaConfirmando(pedido.id_venta, 'confirmar-pago')) {
+                  <div class="confirmacion-inline" role="group" aria-live="polite">
+                    <span>¿Confirmas el pago del pedido #{{ pedido.id_venta }}? No se puede deshacer.</span>
+                    <button type="button" class="btn-aceptar-accion" (click)="ejecutarConfirmacion()">
+                      Sí, confirmar
+                    </button>
+                    <button type="button" class="btn-cancelar-accion" (click)="cancelarConfirmacion()">
+                      No
+                    </button>
+                  </div>
+                } @else {
+                  <button
+                    class="btn-confirmar-pago"
+                    [disabled]="((pedido.metodo_pago === 'Yape' || pedido.metodo_pago === 'Plin') && !pedido.comprobante_pago) || procesandoId === pedido.id_venta"
+                    (click)="confirmarPago(pedido)"
+                  >
+                    @if (procesandoId === pedido.id_venta) { Confirmando... } @else { <app-icono nombre="CheckCircle" [tamano]="16" />Confirmar pago }
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="mb-4">
+        <h2 class="h6 fw-bold titulo-con-icono"><app-icono nombre="CheckCircle" [tamano]="18" />Pagados ({{ pagados.length }})</h2>
+        @if (pagados.length === 0) {
+          <p class="estado-msg">Todavía no hay pedidos pagados.</p>
+        }
+        <div class="row g-3">
+          @for (pedido of pagados; track pedido.id_venta) {
+            <div class="col-12 col-md-6 col-lg-6">
+              <div class="pedido-card pagado">
+                <div class="pedido-header">
+                  <strong>Pedido #{{ pedido.id_venta }}</strong>
+                  <span class="badge-estado pagado">Pagado</span>
+                </div>
+                <p class="mb-1">Cliente: {{ pedido.cliente }}</p>
+                <app-direccion-entrega
+                  [direccion]="pedido.direccion_entrega"
+                  [latitud]="pedido.latitud_entrega"
+                  [longitud]="pedido.longitud_entrega"
+                  [telefono]="pedido.telefono_cliente"
+                />
+                <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+                <p class="mb-1">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+                @if (tieneUbicacion(pedido)) {
+                  <button type="button" class="btn-ver-detalle" [attr.aria-expanded]="seguimientoAbierto === pedido.id_venta" (click)="alternarSeguimiento(pedido.id_venta)">
+                    <app-icono nombre="Motorcycle" [tamano]="14" />{{ seguimientoAbierto === pedido.id_venta ? 'Ocultar ruta de entrega' : 'Entrega y ruta' }}@if (pedido.estado_entrega === 'En camino') { (en camino) }
+                  </button>
+                  @if (seguimientoAbierto === pedido.id_venta) {
+                    <app-seguimiento-entrega [idVenta]="pedido.id_venta" modo="admin" />
+                  }
+                }
+                <a routerLink="/menu/entregas" class="btn-ir-entregas"><app-icono nombre="Camera" [tamano]="16" />Registrar entrega</a>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h2 class="h6 fw-bold titulo-con-icono"><app-icono nombre="XCircle" [tamano]="18" />Cancelados ({{ cancelados.length }})</h2>
+        @if (cancelados.length === 0) {
+          <p class="estado-msg">No hay pedidos cancelados.</p>
+        }
+        <div class="row g-3">
+          @for (pedido of cancelados; track pedido.id_venta) {
+            <div class="col-12 col-md-6 col-lg-6">
+              <div class="pedido-card cancelado">
+                <div class="pedido-header">
+                  <strong>Pedido #{{ pedido.id_venta }}</strong>
+                  <span class="badge-estado anulado">Cancelado</span>
+                </div>
+                <p class="mb-1">Cliente: {{ pedido.cliente }}</p>
+                <app-direccion-entrega
+                  [direccion]="pedido.direccion_entrega"
+                  [latitud]="pedido.latitud_entrega"
+                  [longitud]="pedido.longitud_entrega"
+                  [telefono]="pedido.telefono_cliente"
+                />
+                <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+                <p class="mb-0">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+                @if (estaConfirmando(pedido.id_venta, 'eliminar')) {
+                  <div class="confirmacion-inline" role="group" aria-live="polite">
+                    <span>¿Quitar de la lista el pedido cancelado #{{ pedido.id_venta }}?</span>
+                    <button type="button" class="btn-aceptar-accion" (click)="ejecutarConfirmacion()">
+                      Sí, eliminar
+                    </button>
+                    <button type="button" class="btn-cancelar-accion" (click)="cancelarConfirmacion()">
+                      No
+                    </button>
+                  </div>
+                } @else {
+                  <button
+                    class="btn-eliminar-cancelado"
+                    [disabled]="procesandoId === pedido.id_venta"
+                    (click)="eliminarCancelado(pedido)"
+                  >
+                    @if (procesandoId === pedido.id_venta) { Eliminando... } @else { <app-icono nombre="Trash" [tamano]="16" />Eliminar de la lista }
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+    } @else {
+      <!-- VISTA CLIENTE: sus propios pedidos -->
+      @if (pedidos.length === 0) {
+        <p class="estado-msg">Todavía no tienes pedidos.</p>
+      }
+      <div class="row g-3">
+        @for (pedido of pedidos; track pedido.id_venta) {
+          <!-- Antes era col-md-6 col-lg-4: en escritorio las tarjetas quedaban
+               en una columna estrecha y se desperdiciaba 2/3 de la pantalla. -->
+          <div class="col-12 col-xl-6">
+            <div class="pedido-card" [class.pendiente]="pedido.estado_venta === 'Pendiente'" [class.pagado]="pedido.estado_venta === 'Completada'" [class.cancelado]="esCancelado(pedido)">
+              <div class="pedido-header">
+                <strong>Pedido #{{ pedido.id_venta }}</strong>
+                <span class="badge-estado" [ngClass]="{
+                  pendiente: pedido.estado_venta === 'Pendiente',
+                  pagado: pedido.estado_venta === 'Completada',
+                  anulado: esCancelado(pedido)
+                }">{{ pedido.estado_venta === 'Pendiente' ? 'Pendiente de pago' : pedido.estado_venta === 'Completada' ? 'Pagado' : 'Cancelado' }}</span>
+              </div>
+              <app-direccion-entrega
+                [direccion]="pedido.direccion_entrega"
+                [latitud]="pedido.latitud_entrega"
+                [longitud]="pedido.longitud_entrega"
+              />
+              <p class="mb-1">Método: {{ pedido.metodo_pago }}</p>
+              <p class="mb-1">Total: <strong>S/ {{ pedido.monto_total }}</strong></p>
+
+              <!-- Seguimiento del delivery: el cliente ve la ruta y por dónde viene su pedido. -->
+              @if (pedido.estado_entrega === 'En camino' || pedido.estado_entrega === 'Entregado') {
+                <button type="button" class="btn-ver-detalle btn-seguimiento" [attr.aria-expanded]="seguimientoAbierto === pedido.id_venta" (click)="alternarSeguimiento(pedido.id_venta)">
+                  <app-icono nombre="Motorcycle" [tamano]="14" />{{ seguimientoAbierto === pedido.id_venta ? 'Ocultar mapa' : (pedido.estado_entrega === 'En camino' ? 'Ver por dónde viene mi pedido' : 'Ver recorrido') }}
+                </button>
+                @if (seguimientoAbierto === pedido.id_venta) {
+                  <app-seguimiento-entrega [idVenta]="pedido.id_venta" modo="cliente" />
+                }
+              }
+
+              <!-- Productos del pedido: el backend ya exponía el detalle,
+                   pero la web nunca lo mostraba. -->
+              <button
+                type="button"
+                class="btn-ver-detalle"
+                [attr.aria-expanded]="detalleAbierto === pedido.id_venta"
+                (click)="alternarDetalle(pedido.id_venta)"
+              >
+                <app-icono [nombre]="detalleAbierto === pedido.id_venta ? 'CaretUp' : 'CaretDown'" [tamano]="14" />{{ detalleAbierto === pedido.id_venta ? 'Ocultar productos' : 'Ver productos' }}
+              </button>
+
+              @if (detalleAbierto === pedido.id_venta) {
+                @if (cargandoDetalle === pedido.id_venta) {
+                  <p class="detalle-cargando">Cargando productos...</p>
+                } @else if (errorDetalle[pedido.id_venta]) {
+                  <p class="detalle-error">{{ errorDetalle[pedido.id_venta] }}</p>
+                } @else {
+                  <div class="detalle-pedido">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th scope="col">Producto</th>
+                          <th scope="col">Cant.</th>
+                          <th scope="col">P. unit.</th>
+                          <th scope="col">Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (d of detallesPorPedido[pedido.id_venta] ?? []; track d.id_detalle) {
+                          <tr>
+                            <td>{{ d.nombre_postre }}</td>
+                            <td>{{ d.cantidad }}</td>
+                            <td>S/ {{ d.precio_unitario }}</td>
+                            <td>S/ {{ d.subtotal }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <th scope="row" colspan="3">Total</th>
+                          <td>S/ {{ totalDetalle(pedido.id_venta) }}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                }
+              }
+              @if (pedido.comprobante_pago) {
+                <img
+                  [src]="urlComprobante(pedido.comprobante_pago)"
+                  alt="Comprobante del pedido #{{ pedido.id_venta }}"
+                  class="comprobante-thumb"
+                  width="160"
+                  height="160"
+                  loading="lazy"
+                  decoding="async"
+                />
+              }
+
+              @if (pedido.estado_venta === 'Pendiente' && pedido.metodo_pago === 'Tarjeta') {
+                <button type="button" class="btn-pagar-mp" [disabled]="generandoLinkId === pedido.id_venta" (click)="pagarConMercadoPago(pedido)">
+                  <app-icono nombre="CreditCard" [tamano]="16" />{{ generandoLinkId === pedido.id_venta ? 'Generando link...' : 'Pagar con Mercado Pago' }}
+                </button>
+              }
+
+              @if (pedido.estado_venta === 'Pendiente') {
+                <!-- Subir o reemplazar la foto del comprobante en cualquier momento,
+                     no solo justo después de comprar. Disponible para cualquier
+                     método de pago, por si el cliente quiere dejar evidencia. -->
+                <label class="btn-subir-comprobante">
+                  {{ subiendoComprobanteId === pedido.id_venta
+                      ? 'Subiendo...'
+                      : (pedido.comprobante_pago ? 'Reemplazar comprobante' : 'Subir comprobante') }}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    [disabled]="subiendoComprobanteId === pedido.id_venta"
+                    (change)="seleccionarComprobantePedido($event, pedido)"
+                  />
+                </label>
+                @if (errorComprobantePorPedido[pedido.id_venta]) {
+                  <p class="text-danger"><small>{{ errorComprobantePorPedido[pedido.id_venta] }}</small></p>
+                }
+
+                @if (estaConfirmando(pedido.id_venta, 'cancelar')) {
+                  <div class="confirmacion-inline" role="group" aria-live="polite">
+                    <span>¿Cancelar el pedido #{{ pedido.id_venta }}? El stock vuelve al catálogo.</span>
+                    <button type="button" class="btn-aceptar-accion" (click)="ejecutarConfirmacion()">
+                      Sí, cancelar
+                    </button>
+                    <button type="button" class="btn-cancelar-accion" (click)="cancelarConfirmacion()">
+                      No
+                    </button>
+                  </div>
+                } @else {
+                  <button
+                    class="btn-cancelar-pedido"
+                    [disabled]="procesandoId === pedido.id_venta"
+                    (click)="cancelarPedido(pedido)"
+                  >
+                    {{ procesandoId === pedido.id_venta ? 'Cancelando...' : 'Cancelar pedido' }}
+                  </button>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</main>

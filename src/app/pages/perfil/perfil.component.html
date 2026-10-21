@@ -1,0 +1,181 @@
+<main class="perfil">
+  <header class="perfil-cabecera">
+    <h1>Mi perfil</h1>
+    <p>Actualiza tus datos de contacto y marca en el mapa dónde quieres recibir tus pedidos.</p>
+  </header>
+
+  @if (cargando) {
+    <p class="estado">Cargando tu perfil...</p>
+  }
+
+  @if (errorCarga) {
+    <p class="estado error" role="status">{{ errorCarga }}</p>
+  }
+
+  @if (!cargando && perfil) {
+
+    <!-- ===== DATOS PERSONALES Y DE CONTACTO ===== -->
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <span class="icono"><app-icono nombre="User" [tamano]="20" /></span>
+        <div>
+          <h2>Datos personales</h2>
+          <p>Tu DNI no se puede cambiar: es con lo que inicias sesión.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="datosForm" (ngSubmit)="guardarDatos()" novalidate class="formulario">
+        <div class="grid-2">
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" formControlName="nombre" autocomplete="given-name" />
+            @if (datosForm.get('nombre')?.invalid && (intentoGuardado || datosForm.get('nombre')?.touched)) {
+              <span class="error-texto">Escribe tu nombre (mínimo 2 caracteres).</span>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="apellido">Apellido</label>
+            <input id="apellido" type="text" formControlName="apellido" autocomplete="family-name" />
+            @if (datosForm.get('apellido')?.invalid && (intentoGuardado || datosForm.get('apellido')?.touched)) {
+              <span class="error-texto">Escribe tu apellido (mínimo 2 caracteres).</span>
+            }
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label for="dni">DNI</label>
+            <input id="dni" type="text" [value]="perfil.dni" readonly aria-describedby="dni-ayuda" />
+            <span class="ayuda" id="dni-ayuda">Solo lectura</span>
+          </div>
+
+          <div class="campo">
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" type="tel" formControlName="telefono" placeholder="987654321" maxlength="9" autocomplete="tel" />
+            @if (telefono?.invalid && (intentoGuardado || telefono?.touched)) {
+              <span class="error-texto">El teléfono debe tener 9 dígitos (o quedar vacío).</span>
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="correo">Correo electrónico</label>
+          <input id="correo" type="email" formControlName="correo" placeholder="cliente@azucaryamor.com" autocomplete="email" />
+          @if (correo?.invalid && (intentoGuardado || correo?.touched)) {
+            <span class="error-texto">Ese correo no tiene un formato válido.</span>
+          }
+        </div>
+
+        <!-- ===== UBICACIÓN ===== -->
+        <div class="ubicacion-bloque">
+          <div class="tarjeta-titulo">
+            <span class="icono"><app-icono nombre="MapPin" [tamano]="20" /></span>
+            <div>
+              <h2>Ubicación de entrega</h2>
+              <p>Marca el punto en el mapa y escribe la dirección. Usaremos esto en tus pedidos.</p>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="direccion">Dirección</label>
+            <input
+              id="direccion"
+              type="text"
+              formControlName="direccion"
+              maxlength="200"
+              placeholder="Av. Arequipa 1250, Santa Beatriz, Lima"
+              autocomplete="street-address"
+              (input)="marcarDireccionManual()"
+            />
+            @if (direccion?.invalid && (intentoGuardado || direccion?.touched)) {
+              <span class="error-texto">La dirección no puede pasar de 200 caracteres.</span>
+            }
+          </div>
+
+          @if (sugerenciaMapa) {
+            <div class="sugerencia" role="status">
+              <p><strong>El mapa encontró otra dirección:</strong> {{ sugerenciaMapa }}</p>
+              <div class="sugerencia-acciones">
+                <button type="button" class="btn-secundario" (click)="usarSugerenciaMapa()">Usar esta</button>
+                <button type="button" class="btn-texto" (click)="descartarSugerencia()">Mantener la mía</button>
+              </div>
+            </div>
+          }
+
+          <app-mapa-selector
+            [latitud]="latitud"
+            [longitud]="longitud"
+            (ubicacionCambiada)="onUbicacionCambiada($event)"
+            (direccionDetectada)="onDireccionDetectada($event)"
+          />
+        </div>
+
+        @if (mensajeGuardado) {
+          <p class="aviso ok" role="status">{{ mensajeGuardado }}</p>
+        }
+        @if (mensajeError) {
+          <p class="aviso error" role="status">{{ mensajeError }}</p>
+        }
+
+        <button type="submit" class="btn-principal" [disabled]="guardando">
+          <app-icono nombre="CheckCircle" [tamano]="18" />
+          {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </form>
+    </section>
+
+    <!-- ===== SEGURIDAD ===== -->
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <span class="icono"><app-icono nombre="LockKey" [tamano]="20" /></span>
+        <div>
+          <h2>Cambiar contraseña</h2>
+          <p>Por seguridad te pedimos la contraseña actual antes de cambiarla.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()" novalidate class="formulario">
+        <div class="campo">
+          <label for="password_actual">Contraseña actual</label>
+          <input id="password_actual" type="password" formControlName="actual" autocomplete="current-password" />
+          @if (passwordForm.get('actual')?.invalid && (intentoPassword || passwordForm.get('actual')?.touched)) {
+            <span class="error-texto">Escribe tu contraseña actual.</span>
+          }
+        </div>
+
+        <div class="grid-2">
+          <div class="campo">
+            <label for="password_nueva">Contraseña nueva</label>
+            <input id="password_nueva" type="password" formControlName="nueva" autocomplete="new-password" />
+            @if (passwordForm.get('nueva')?.errors?.['minlength'] && (intentoPassword || passwordForm.get('nueva')?.touched)) {
+              <span class="error-texto">Debe tener al menos 6 caracteres.</span>
+            }
+            @if (passwordForm.errors?.['igualALaActual'] && intentoPassword) {
+              <span class="error-texto">La contraseña nueva debe ser distinta a la actual.</span>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="password_confirmar">Repite la contraseña nueva</label>
+            <input id="password_confirmar" type="password" formControlName="confirmar" autocomplete="new-password" />
+            @if (passwordForm.errors?.['noCoinciden'] && (intentoPassword || passwordForm.get('confirmar')?.touched)) {
+              <span class="error-texto">Las dos contraseñas no coinciden.</span>
+            }
+          </div>
+        </div>
+
+        @if (mensajePassword) {
+          <p class="aviso ok" role="status">{{ mensajePassword }}</p>
+        }
+        @if (errorPassword) {
+          <p class="aviso error" role="status">{{ errorPassword }}</p>
+        }
+
+        <button type="submit" class="btn-secundario" [disabled]="guardandoPassword">
+          {{ guardandoPassword ? 'Cambiando...' : 'Cambiar contraseña' }}
+        </button>
+      </form>
+    </section>
+  }
+</main>

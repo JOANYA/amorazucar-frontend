@@ -1,0 +1,17 @@
+# robots.txt de "Azúcar & Amor"
+#
+# Lighthouse (categoría SEO) validaba /robots.txt, no lo encontraba y el
+# servidor devolvía el index.html del SPA. Como el HTML no es un robots.txt
+# válido, la auditoría reportaba "robots.txt is not valid" con 38 errores y
+# bajaba el puntaje de SEO a 92.
+
+User-agent: *
+Allow: /
+
+# OJO: NO bloquear con `Disallow` rutas que se quieran auditar o mostrar
+# (por ejemplo /menu/ventas). Lighthouse y los buscadores que reciben un
+# Disallow sobre la página que visitan la marcan como "Page is blocked from
+# indexing" y la categoría SEO se hunde (de 100 a 66).
+#
+# La protección real de las páginas con sesión es la autenticación, no
+# robots.txt.

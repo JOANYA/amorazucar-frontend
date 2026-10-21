@@ -1,0 +1,173 @@
+.mapa-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mapa-herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.buscador {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.etiqueta {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #5a2d2d;
+  margin-bottom: 0.35rem;
+}
+
+.fila {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.fila input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid #f8c8d8;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #5a2d2d;
+  background: #fff;
+  outline: none;
+}
+
+.fila input:focus {
+  border-color: #e86a92;
+  box-shadow: 0 0 0 3px rgba(232, 106, 146, 0.15);
+}
+
+.btn-buscar,
+.btn-ubicacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid #c2416b;
+  background: #fff;
+  color: #c2416b;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-ubicacion {
+  border-color: #e5cfae;
+  background: #fff8f2;
+  color: #5a2d2d;
+}
+
+.btn-buscar:hover:not(:disabled),
+.btn-ubicacion:hover:not(:disabled) {
+  background: #fdf0f4;
+}
+
+.btn-buscar:disabled,
+.btn-ubicacion:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.resultados {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 190px;
+  overflow-y: auto;
+  border: 1px solid #f8c8d8;
+  border-radius: 10px;
+  padding: 0.4rem;
+  background: #fff;
+}
+
+.resultado {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #4a2a2a;
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.resultado:hover,
+.resultado:focus-visible {
+  background: #fdf0f4;
+}
+
+.aviso {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #6b4a4a;
+}
+
+.aviso.error {
+  color: #a8323a;
+}
+
+.mapa-marco {
+  position: relative;
+}
+
+/* Leaflet necesita que el contenedor tenga alto propio: si mide 0 px el mapa
+   no se ve (es un error clásico y silencioso). */
+.mapa {
+  height: 340px;
+  border-radius: 12px;
+  border: 1.5px solid #f8c8d8;
+  overflow: hidden;
+  background: #f4e4e4;
+}
+
+.cargando-mapa {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: #6b4a4a;
+  font-size: 0.9rem;
+}
+
+.mapa-pie {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b4a4a;
+}
+
+/* El pin es un divIcon: se le quita el fondo blanco que Leaflet pone por
+   defecto y se le deja solo el SVG. */
+:host ::ng-deep .pin-ubicacion {
+  background: transparent;
+  border: none;
+}
+
+@media (max-width: 575.98px) {
+  .mapa {
+    height: 260px;
+  }
+
+  .btn-buscar,
+  .btn-ubicacion {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

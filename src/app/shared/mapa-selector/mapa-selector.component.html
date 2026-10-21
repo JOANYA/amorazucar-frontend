@@ -1,0 +1,64 @@
+<div class="mapa-selector">
+
+  <!-- Herramientas de arriba: buscar la dirección o usar la ubicación actual.
+       El mapa solo no basta para quien navega con teclado o lector de pantalla:
+       estas dos acciones son la alternativa accesible a mover el pin. -->
+  <div class="mapa-herramientas">
+    <div class="buscador">
+      <label class="etiqueta" for="buscar-direccion">Buscar tu dirección</label>
+      <div class="fila">
+        <input
+          #campoBusqueda
+          id="buscar-direccion"
+          type="text"
+          autocomplete="street-address"
+          placeholder="Av. Arequipa 1250, Lima"
+          (keyup.enter)="buscar(campoBusqueda.value)"
+        />
+        <button type="button" class="btn-buscar" (click)="buscar(campoBusqueda.value)" [disabled]="buscando">
+          <app-icono nombre="MagnifyingGlass" [tamano]="16" />
+          {{ buscando ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="btn-ubicacion" (click)="usarMiUbicacion()" [disabled]="ubicando">
+      <app-icono nombre="MapPin" [tamano]="16" />
+      {{ ubicando ? 'Buscando tu ubicación...' : 'Usar mi ubicación actual' }}
+    </button>
+  </div>
+
+  @if (resultados.length > 0) {
+    <div class="resultados" role="listbox" aria-label="Direcciones encontradas">
+      @for (resultado of resultados; track resultado.etiqueta) {
+        <button type="button" class="resultado" role="option" (click)="elegir(resultado)">
+          <app-icono nombre="MapPin" [tamano]="16" />
+          <span>{{ resultado.etiqueta }}</span>
+        </button>
+      }
+    </div>
+  }
+
+  @if (mensaje) {
+    <p class="aviso" role="status">{{ mensaje }}</p>
+  }
+
+  @if (errorMapa) {
+    <p class="aviso error" role="status">{{ errorMapa }}</p>
+  }
+
+  <div class="mapa-marco">
+    <div #contenedor class="mapa" aria-label="Mapa de OpenStreetMap para marcar tu punto de entrega"></div>
+    @if (cargandoMapa) {
+      <p class="cargando-mapa">Cargando el mapa...</p>
+    }
+  </div>
+
+  <p class="mapa-pie">
+    @if (coordenadasTexto) {
+      Punto marcado: <strong>{{ coordenadasTexto }}</strong>. Puedes arrastrar el pin o tocar otro punto del mapa.
+    } @else {
+      Toca el mapa, arrastra el pin o usa la búsqueda para marcar dónde te llevamos el pedido.
+    }
+  </p>
+</div>

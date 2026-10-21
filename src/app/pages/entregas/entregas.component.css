@@ -1,0 +1,177 @@
+:host {
+  display: block;
+  background-color: #FFF8F2;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Avisos (reemplazan a alert() del navegador) ===== */
+.aviso {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* #1F6B29 sobre #e6f6e8 = 5.86:1 (AA) */
+.aviso-exito {
+  background: #e6f6e8;
+  border: 1px solid #b7e0bd;
+  color: #1F6B29;
+}
+
+/* #a94430 sobre #fff3f0 = 5.4:1 (AA) */
+.aviso-error {
+  background: #fff3f0;
+  border: 1px solid #f3c8bd;
+  color: #a94430;
+}
+
+/* Confirmación en línea de borrado (reemplaza a confirm()) */
+.confirmar-borrado {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-aceptar-borrado,
+.btn-cancelar-borrado {
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Blanco sobre #8a1c1c = 8.6:1 (AA) */
+.btn-aceptar-borrado {
+  background: #8a1c1c;
+  color: #ffffff;
+  border: none;
+}
+
+/* #5A2D2D sobre blanco = 10.8:1 (AA) */
+.btn-cancelar-borrado {
+  background: #ffffff;
+  color: #5A2D2D;
+  border: 2px solid #5A2D2D;
+}
+
+.btn-volver {
+  display: inline-block;
+  /* #C2416B sobre #FFF8F2 = 4.79:1 (AA). Antes #E86A92 daba 2.89:1 */
+  color: #C2416B;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+
+.btn-volver:hover {
+  transform: translateX(-4px);
+}
+
+.titulo-galeria {
+  color: #5A2D2D;
+  font-weight: 800;
+}
+
+.subtitulo-galeria {
+  color: #8a5a5a;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* PANEL ADMIN */
+.card-admin {
+  background: #ffffff;
+  border: 2px dashed #E86A92;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(232, 106, 146, 0.15);
+}
+
+.admin-title {
+  color: #C2416B;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.img-preview {
+  /* Los atributos width/height del HTML no deben fijar la caja ni deformar la
+     vista previa: la foto del delivery conserva su proporcion real */
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: 12px;
+  border: 2px solid #F8C8D8;
+  object-fit: cover;
+}
+
+.btn-publicar {
+  /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA);
+     el degradado de marca original daba 2.1:1 - 3.0:1 */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 0.6rem 2rem;
+  transition: transform 0.15s ease;
+}
+
+.btn-publicar:hover {
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* CARDS DE LA GALERÍA */
+.card-entrega {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #F8C8D8;
+  box-shadow: 0 8px 20px rgba(90, 45, 45, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-entrega:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(232, 106, 146, 0.2);
+}
+
+.img-wrapper {
+  position: relative;
+  height: 220px;
+  width: 100%;
+}
+
+.img-entrega {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-distrito {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(90, 45, 45, 0.85);
+  color: #ffffff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.cliente-nombre {
+  color: #5A2D2D;
+  font-size: 0.95rem;
+}
+
+.fecha-text {
+  color: #8a5a5a;
+  font-size: 0.8rem;
+}

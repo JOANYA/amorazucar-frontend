@@ -1,0 +1,154 @@
+<!-- ACCESIBILIDAD: <main>. Esta página se usa sola (/entregas) y dentro del
+     layout del menú (/menu/entregas); el layout ya no declara <main>, así que
+     aquí siempre hay exactamente uno. -->
+<main class="entregas-container py-5">
+  <div class="container">
+    
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+      <a routerLink="/home" class="btn-volver mb-3">⬅ Volver al Inicio</a>
+      <h1 class="titulo-galeria">📸 Pedidos Entregados con Amor</h1>
+      <p class="subtitulo-galeria">
+        Mira cómo llegan nuestros postres a los hogares de nuestros clientes. ¡100% reales e impecables!
+      </p>
+    </div>
+
+    <!-- AVISOS (antes se usaban alert()/confirm() del navegador) -->
+    @if (mensajeExito) {
+      <div class="aviso aviso-exito" role="status">{{ mensajeExito }}</div>
+    }
+    @if (mensajeError) {
+      <div class="aviso aviso-error" role="alert">{{ mensajeError }}</div>
+    }
+
+    <!-- PANEL EXCLUSIVO PARA ADMINISTRADOR (Formulario de Carga) -->
+    @if (esAdmin) {
+      <div class="card card-admin mb-5 p-4">
+        <!-- ACCESIBILIDAD: era <h3> justo debajo del <h1> de la página, un
+             salto que Lighthouse marca como "heading elements are not in a
+             sequentially-descending order". El tamaño no cambia: .admin-title
+             ya fija font-size en el CSS. -->
+        <h2 class="admin-title mb-3">👑 Panel de Administrador: Registrar Nueva Entrega</h2>
+        
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-4">
+            <label for="entrega-cliente" class="form-label font-weight-bold">Nombre / Iníciales Cliente: *</label>
+            <input
+              id="entrega-cliente"
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoCliente"
+              placeholder="Ej. Mariana P."
+              maxlength="60"
+              required
+            />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="entrega-distrito" class="form-label">Distrito / Zona: *</label>
+            <input
+              id="entrega-distrito"
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoDistrito"
+              placeholder="Ej. San Borja"
+              maxlength="60"
+              required
+            />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label for="entrega-foto" class="form-label">Seleccionar Foto del Delivery: *</label>
+            <input
+              id="entrega-foto"
+              type="file"
+              class="form-control"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+            />
+          </div>
+
+          <!-- Previsualización de la foto seleccionada -->
+          @if (procesandoImagen) {
+            <div class="col-12 text-center mt-3">
+              <p class="small text-muted mb-0">Optimizando la imagen...</p>
+            </div>
+          }
+
+          @if (imagenPreview && !procesandoImagen) {
+            <div class="col-12 text-center mt-3">
+              <p class="small text-muted mb-1">Vista previa:</p>
+              <img
+                [src]="imagenPreview"
+                alt="Previsualización de la foto de entrega"
+                class="img-preview"
+                width="320"
+                height="240"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          }
+
+          <div class="col-12 text-end mt-3">
+            <button class="btn btn-publicar" [disabled]="procesandoImagen" (click)="guardarEntrega()">
+              🚀 Publicar Foto en la Galería
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- GALERÍA PÚBLICA DE ENTREGAS (Lo que ven los clientes) -->
+    <div class="row g-4">
+      @for (item of entregas; track item.id) {
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card-entrega h-100">
+            <div class="img-wrapper">
+              <img
+                [src]="item.imagenUrl"
+                [alt]="item.cliente"
+                class="img-entrega"
+                width="400"
+                height="220"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="badge-distrito">{{ item.distrito }}</span>
+            </div>
+            
+            <div class="p-3 d-flex justify-content-between align-items-center">
+              <div>
+                <strong class="cliente-nombre">Entregado a {{ item.cliente }}</strong>
+                <small class="fecha-text d-block">{{ item.fecha }}</small>
+              </div>
+
+              <!-- Botón Eliminar solo visible para el Admin -->
+              @if (esAdmin) {
+                @if (idPendienteBorrar === item.id) {
+                  <div class="confirmar-borrado">
+                    <button class="btn-aceptar-borrado" (click)="confirmarBorrado()" title="Confirmar eliminación">
+                      Sí, borrar
+                    </button>
+                    <button class="btn-cancelar-borrado" (click)="cancelarBorrado()" title="Cancelar">
+                      No
+                    </button>
+                  </div>
+                } @else {
+                  <button class="btn btn-danger btn-sm" (click)="pedirBorrado(item.id)" title="Eliminar foto" [attr.aria-label]="'Eliminar la entrega de ' + item.cliente">
+                    🗑️
+                  </button>
+                }
+              }
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-12 text-center py-5">
+          <p class="text-muted fs-5">Aún no hay fotos de entregas publicadas.</p>
+        </div>
+      }
+    </div>
+
+  </div>
+</main>

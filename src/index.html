@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Azúcar &amp; Amor — Repostería artesanal</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Postres y tortas artesanales hechos en casa. Pide en línea con entrega a domicilio.">
+  <meta name="theme-color" content="#C2416B">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!--
+    RENDIMIENTO: el API (Express) vive en OTRO origen que el front (Angular),
+    y las fotos del catálogo que forman el LCP salen de ahí. Abrir la conexión
+    (DNS + TCP + TLS) antes de que el JS pida la primera imagen ahorra cientos
+    de ms en 4G.
+
+    OJO: en local el API es 127.0.0.1:3000. Cuando publiques en la nube,
+    cambia estos enlaces por la URL de tu backend (ver environment.prod.ts).
+  -->
+  <link rel="preconnect" href="http://127.0.0.1:3000">
+  <link rel="dns-prefetch" href="http://127.0.0.1:3000">
+
+  <!--
+    PAGO CON TARJETA (Culqi) — PENDIENTE, no activar todavía.
+    tienda.component.ts llama a `Culqi.publicKey`, `Culqi.settings()` y
+    `Culqi.open()`, pero el widget NUNCA se carga aquí, así que al pulsar
+    "Pagar con tarjeta" se produce un ReferenceError (Culqi is not defined).
+
+    Para habilitarlo cuando tengas la pasarela lista:
+      1) Descomenta la línea de abajo.
+      2) Pon tu llave pública real en culqiPublicKey
+         (src/environments/environment.ts y environment.prod.ts).
+      3) Prueba en modo test de Culqi con las tarjetas de prueba de su
+         documentación antes de pasar a producción.
+
+    <script src="https://checkout.culqi.com/js/v3"></script>
+  -->
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

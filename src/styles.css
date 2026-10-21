@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Accesibilidad: respeta la preferencia del sistema de reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

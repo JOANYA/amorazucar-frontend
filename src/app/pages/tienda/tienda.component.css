@@ -1,0 +1,809 @@
+:host {
+  display: block;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background: #FFF8F2;
+}
+
+/* ===== NAVBAR ===== */
+/*
+ * La barra se queda Fija arriba al hacer scroll: así el botón del carrito
+ * (con su contador de productos) siempre está a la vista, sin tener que
+ * volver al inicio de la página.
+ */
+.navbar-tienda {
+  /* Degradado oscurecido: el texto blanco de la barra da 4.9:1 - 5.1:1 (AA).
+     Con el degradado de marca original el blanco daba 2.1:1 - 3.0:1 */
+  background: linear-gradient(90deg, #C2416B 0%, #8A6A16 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+/* Los iconos heredan el color del texto de la barra */
+.navbar-tienda app-icono {
+  color: inherit;
+}
+
+/* Títulos que llevan un icono delante (pantallas de pago) */
+.titulo-con-icono {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Los botones e iconos del panel de carrito heredan el color del contenedor */
+.carrito-panel app-icono,
+.btn-agregar app-icono,
+.btn-confirmar app-icono {
+  color: inherit;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* ===== BANNER MODO ADMIN ===== */
+/*
+ * En móvil el banner se desbordaba: el botón "Agregar nuevo postre" quedaba
+ * partido en tres líneas y se salía de su recuadro. Ahora el banner se apila
+ * en vertical y el botón ocupa el ancho disponible.
+ */
+.panel-admin-banner {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FDEAF0 100%);
+  border: 2px dashed #E86A92;
+  gap: 12px;
+}
+
+.btn-primary-admin {
+  /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA) */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #ffffff;
+  border: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-primary-admin:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .panel-admin-banner {
+    flex-direction: column;
+    align-items: stretch !important;
+    text-align: left;
+  }
+
+  .panel-admin-banner .btn-primary-admin {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* ===== ACCIONES ADMIN EN CARDS ===== */
+
+/* Las acciones (editar / eliminar) no se muestran siempre: aparecen al pasar
+   el cursor o al enfocar con el teclado. Así el catálogo se ve limpio y las
+   acciones siguen siendo accesibles sin ratón. */
+.admin-card-actions {
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.postre-card:hover .admin-card-actions,
+.postre-card:focus-within .admin-card-actions {
+  opacity: 1;
+}
+
+/* En pantallas táctiles no hay hover: se muestran siempre */
+@media (hover: none) {
+  .admin-card-actions { opacity: 1; }
+}
+
+.admin-card-actions button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0.85rem;
+  border: none;
+}
+
+.admin-card-actions button:focus-visible {
+  outline: 3px solid #5A2D2D;
+  outline-offset: 2px;
+}
+
+/*
+ * El botón "Agregar foto" ocupaba una franja completa en cada tarjeta del
+ * catálogo. Ahora aparece al pasar el cursor sobre la tarjeta (el lápiz ya
+ * permite editarla, así que no se pierde funcionalidad).
+ */
+.btn-foto-postre {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.postre-card:hover .btn-foto-postre,
+.postre-card:focus-within .btn-foto-postre,
+.btn-foto-postre.subiendo {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .btn-foto-postre { opacity: 1; }
+}
+
+/* El título de la tarjeta ocupa siempre 2 líneas: así los precios y los
+   botones quedan alineados entre tarjetas con nombres de distinta longitud. */
+.postre-nombre {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+
+/* La descripción ocupa siempre 2 líneas por el mismo motivo */
+.postre-descripcion {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+
+.titulo-tienda {
+  color: #5A2D2D;
+  font-weight: 800;
+}
+
+.subtitulo-tienda {
+  color: #8a5a5a;
+  margin-bottom: 2rem;
+}
+
+.estado-msg {
+  color: #8a5a5a;
+}
+
+.estado-msg.error {
+  color: #C62828;
+}
+
+/* ===== AVISO DE ACCIONES (reemplaza a alert() del navegador) ===== */
+.aviso-accion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #e6f6e8;
+  border: 1px solid #b7e0bd;
+  /* #1F6B29 sobre #e6f6e8 = 5.86:1 (AA) */
+  color: #1F6B29;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.aviso-accion.error {
+  background: #fff3f0;
+  border-color: #f3c8bd;
+  /* #a94430 sobre #fff3f0 = 5.4:1 (AA) */
+  color: #a94430;
+}
+
+.btn-cancelar-accion {
+  background: #ffffff;
+  color: #5A2D2D;
+  border: 2px solid #5A2D2D;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* Estado "pendiente de confirmar" del botón de eliminar */
+.btn.confirmando {
+  outline: 3px solid #8a1c1c;
+  outline-offset: 1px;
+}
+
+/* ===== FILTRO POR CATEGORÍA ===== */
+.filtro-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-categoria {
+  border: 2px solid #F8C8D8;
+  background: #ffffff;
+  /* #5A2D2D sobre blanco = 10.8:1 (AA) */
+  color: #5A2D2D;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip-categoria:hover {
+  border-color: #C2416B;
+}
+
+/* Activo: blanco sobre #C2416B = 4.93:1 (AA) */
+.chip-categoria.activo {
+  background: #C2416B;
+  border-color: #C2416B;
+  color: #ffffff;
+}
+
+.chip-categoria:focus-visible {
+  outline: 3px solid #8A6A16;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .chip-categoria {
+    padding: 7px 13px;
+    font-size: 0.83rem;
+  }
+}
+
+/* ===== CARDS DE POSTRE ===== */
+.postre-card {
+  background: #fff;
+  border: 2px solid #F8C8D8;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(90, 45, 45, 0.07);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.postre-card:hover {
+  transform: translateY(-4px);
+}
+
+.postre-nombre {
+  color: #5A2D2D;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.postre-imagen-wrap {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  background: #FFF3F6;
+}
+
+.postre-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.postre-imagen-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+}
+
+.btn-foto-postre {
+  position: absolute;
+  bottom: 0.4rem;
+  left: 0.4rem;
+  right: 0.4rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.btn-foto-postre.subiendo {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.postre-descripcion {
+  color: #8a5a5a;
+  font-size: 0.88rem;
+  flex-grow: 1;
+}
+
+.postre-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.75rem 0;
+}
+
+.postre-precio {
+  color: #C2416B;
+}
+
+.postre-stock {
+  color: #8A6A16; /* 5.1:1 AA sobre blanco (el dorado #D4AF37 daba 2.0:1) */
+}
+
+.btn-agregar {
+  /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA) */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-agregar:hover {
+  opacity: 0.9;
+}
+
+/* ===== CARRITO LATERAL ===== */
+.carrito-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(90, 45, 45, 0.35);
+  z-index: 1000;
+}
+
+.carrito-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 380px;
+  height: 100vh;
+  background: #FFF8F2;
+  z-index: 1001;
+  box-shadow: -8px 0 30px rgba(90, 45, 45, 0.2);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.25s ease;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.carrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.carrito-header h2 {
+  color: #5A2D2D;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #5A2D2D;
+}
+
+.carrito-vacio {
+  color: #8a5a5a;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.carrito-items {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.carrito-item {
+  border-bottom: 1px solid #F8C8D8;
+  padding: 0.75rem 0;
+}
+
+.carrito-item-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.4rem;
+}
+
+.carrito-item-nombre {
+  color: #5A2D2D;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.carrito-item-precio {
+  color: #8a5a5a;
+  font-size: 0.8rem;
+}
+
+.carrito-item-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.carrito-item-controles button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #F8C8D8;
+  background: #fff;
+  color: #5A2D2D;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-quitar {
+  margin-left: auto;
+  border: none !important;
+  background: none !important;
+  font-size: 1rem;
+}
+
+.carrito-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 2px solid #F8C8D8;
+  color: #5A2D2D;
+  font-size: 1.1rem;
+}
+
+.btn-checkout {
+  /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA) */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Alternativa visible a cerrar el panel con la X para seguir eligiendo postres */
+.btn-seguir-comprando {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.7rem;
+  border: 2px solid #C2416B;
+  border-radius: 50px;
+  background: #fff;
+  color: #A83259;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-seguir-comprando:hover {
+  background: #FDF0F4;
+}
+
+/* ===== MODALES (CHECKOUT Y ADMIN CREAR/EDITAR) ===== */
+.checkout-overlay,
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(90, 45, 45, 0.45);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.checkout-modal,
+.modal-card {
+  background: #FFF8F2;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.checkout-modal h2 {
+  color: #5A2D2D;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.checkout-resumen {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #F8C8D8;
+}
+
+.checkout-resumen-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #5A2D2D;
+  margin-bottom: 0.4rem;
+}
+
+.checkout-resumen-total {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #F8C8D8;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  font-weight: 700;
+  color: #5A2D2D;
+}
+
+/* ===== Entrega del pedido (dirección del perfil) ===== */
+.checkout-entrega {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #F8C8D8;
+  border-radius: 10px;
+  background: #FFF8F2;
+}
+
+.checkout-entrega > label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #5A2D2D;
+  margin-bottom: 0.4rem;
+}
+
+.entrega-texto {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #5A2D2D;
+}
+
+.entrega-texto app-icono {
+  color: #C2416B;
+  margin-top: 0.15rem;
+}
+
+.entrega-mapa,
+.entrega-ayuda a,
+.entrega-aviso a {
+  /* #A83259 sobre #FFF8F2 = 6.1:1 (AA) */
+  color: #A83259;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.entrega-mapa {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.entrega-ayuda {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #6B4A4A;
+}
+
+.entrega-aviso {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6B4A4A;
+}
+
+.metodo-pago-section label {
+  display: block;
+  color: #5A2D2D;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.metodo-pago-opciones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.metodo-pago-opcion {
+  border: 2px solid #F8C8D8;
+  border-radius: 12px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #5A2D2D;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.metodo-pago-opcion input {
+  display: block;
+  margin: 0 auto 0.4rem auto;
+}
+
+.metodo-pago-opcion.selected {
+  border-color: #E86A92;
+  background: #fff0f4;
+}
+
+.checkout-error {
+  background: #ffe6e6;
+  color: #C62828;
+  padding: 0.6rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.checkout-acciones {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-secundario {
+  flex: 1;
+  background: transparent;
+  border: 2px solid #5A2D2D;
+  color: #5A2D2D;
+  border-radius: 50px;
+  padding: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-confirmar {
+  flex: 2;
+  /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA) */
+  background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.btn-confirmar:disabled,
+.btn-secundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.checkout-exito {
+  text-align: center;
+}
+
+.exito-icono {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .carrito-panel { max-width: 100%; }
+  .metodo-pago-opciones { grid-template-columns: 1fr; }
+}
+
+.checkout-comprobante {
+  text-align: center;
+}
+
+.qr-pago-img {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin: 0.75rem auto;
+  display: block;
+  background: #fff;
+}
+
+.comprobante-preview {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 0.75rem auto 0;
+  display: block;
+  border: 1px solid #eee;
+}
+
+/* --- Pago con tarjeta (Mercado Pago) --- */
+.mp-monto {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #c2416b;
+  margin: 0 0 1rem;
+  line-height: 1.1;
+}
+
+.mp-link-caja {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mp-link {
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: #a83259;
+  text-decoration: underline;
+}

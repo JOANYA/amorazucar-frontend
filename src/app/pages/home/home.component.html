@@ -1,0 +1,309 @@
+<!-- NAVBAR SUPERIOR -->
+<header class="navbar-tienda py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <!-- Marca / Logo -->
+  <a routerLink="/home" class="navbar-brand text-white fw-bold d-flex align-items-center gap-2 text-decoration-none">
+    <app-icono nombre="Storefront" [tamano]="22" />
+    Azúcar & Amor
+  </a>
+
+  <!-- Zona de usuario / Acciones -->
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <!-- SI EL USUARIO ESTÁ LOGUEADO -->
+    @if (estaAutenticado) {
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="text-white fw-semibold">
+          Hola, {{ nombreUsuario }}
+        </span>
+
+        @if (esAdmin) {
+          <span class="badge bg-warning text-dark">Admin</span>
+        }
+
+        <a routerLink="/menu/ventas" class="btn btn-light rounded-pill px-3">
+          <app-icono nombre="ShoppingCart" [tamano]="16" /> Ir al Menú
+        </a>
+
+        <button class="btn btn-outline-light btn-sm rounded-pill" (click)="cerrarSesion()">
+          <app-icono nombre="SignOut" [tamano]="16" /> Cerrar Sesión
+        </button>
+      </div>
+    }
+    <!-- SI NO ESTÁ LOGUEADO -->
+    @else {
+      <div class="d-flex gap-2 flex-wrap">
+        <a routerLink="/login" class="btn btn-outline-light rounded-pill px-3">
+          <app-icono nombre="SignIn" [tamano]="16" /> Iniciar Sesión
+        </a>
+        <a routerLink="/registro" class="btn btn-light rounded-pill px-3">
+          <app-icono nombre="UserPlus" [tamano]="16" /> Registrarse
+        </a>
+      </div>
+    }
+  </div>
+</header>
+
+<!-- ACCESIBILIDAD: <main> delimita el contenido principal de la página.
+     Lighthouse (auditoría "landmark-one-main") penaliza que no exista este
+     punto de referencia, porque los lectores de pantalla lo usan para saltar
+     directo al contenido y evitar el menú. -->
+<main>
+
+<!-- BARRA DE CONTACTO SUPERIOR (TOP BAR) -->
+<div class="top-bar py-2">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+    <!-- Enlace a WhatsApp -->
+    <a href="https://wa.me/51905502811?text=Hola,%20quisiera%20hacer%20un%20pedido%20en%20Az%C3%BAcar%20%26%20Amor"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="contact-link whatsapp-link">
+      <app-icono nombre="WhatsappLogo" [tamano]="18" />
+      <span>Pide por WhatsApp: <strong>+51 905 502 811</strong></span>
+    </a>
+
+    <!-- Redes Sociales -->
+    <div class="social-links d-flex gap-3 align-items-center">
+      <span class="d-none d-sm-inline text-muted small">Síguenos:</span>
+      <a href="https://www.instagram.com/azucar_amor_26?igsh=MTU1a3RpdDJmdGttcg==" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
+        <app-icono nombre="InstagramLogo" [tamano]="18" />
+        <span class="d-none d-md-inline">Instagram</span>
+      </a>
+      <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" title="Facebook">
+        <app-icono nombre="FacebookLogo" [tamano]="18" />
+        <span class="d-none d-md-inline">Facebook</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     HERO: producto real a un lado, mensaje y acciones al otro.
+     Antes era un bloque centrado con emojis flotantes que dejaba
+     mucho espacio vacío y se veía como una plantilla genérica.
+     ============================================================ -->
+<section class="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+
+      <!-- Columna de texto -->
+      <div class="col-12 col-lg-6 hero-texto">
+        <span class="hero-etiqueta">
+          <app-icono nombre="HandHeart" [tamano]="16" />
+          Repostería artesanal
+        </span>
+
+        <h1 class="hero-title">
+          Postres hechos a mano,<br />
+          <span class="hero-title-destacado">horneados hoy</span> para ti
+        </h1>
+
+        <p class="hero-subtitle">
+          Tortas, cheesecakes y bocaditos horneados cada mañana. Te los llevamos
+          el mismo día en Lima.
+        </p>
+
+        <!-- ACCIONES: una sola llamada a la acción. Antes el hero repetía
+             "Crear cuenta gratis" e "Inicia sesión aquí", que ya están en el
+             navbar y otra vez en el cierre de la página: el visitante leía lo
+             mismo tres veces. Para quien no tiene sesión, "Ver la tienda" ya
+             lo lleva al login, donde puede registrarse. -->
+        <div class="hero-acciones">
+          <button class="btn btn-comprar btn-lg" (click)="irAComprar()">
+            <app-icono nombre="ShoppingCart" [tamano]="18" /> Ver la tienda
+          </button>
+        </div>
+
+        <!-- Señales de confianza: responden a las dudas típicas antes de comprar -->
+        <ul class="hero-confianza">
+          @for (punto of puntosDeConfianza; track punto.texto) {
+            <li>
+              <span class="confianza-icono">
+                <app-icono [nombre]="punto.icono" [tamano]="18" />
+              </span>
+              <span>
+                <strong>{{ punto.titulo }}</strong>
+                <small>{{ punto.texto }}</small>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- Columna visual: producto real del catálogo -->
+      <div class="col-12 col-lg-6">
+        @if (collage.length > 0) {
+          <div class="hero-collage" [class.con-dos]="collage.length < 3">
+            @for (postre of collage; track postre.id_postre) {
+              <a routerLink="/menu/ventas" class="collage-pieza" [title]="postre.nombre">
+                @if (postre.imagen) {
+                  <!-- <picture>: el navegador baja la variante WebP de 400 px en
+                       pantallas normales y la de 800 px solo si la pantalla es
+                       retina. El <img> queda como respaldo con la foto
+                       original para navegadores sin WebP. -->
+                  <picture>
+                    <source
+                      type="image/webp"
+                      [srcset]="webpSrcset(postre)"
+                      sizes="(min-width: 992px) 420px, (min-width: 576px) 55vw, 90vw"
+                    />
+                    <img
+                      [src]="urlImagenPostre(postre, 800)"
+                      [alt]="postre.nombre"
+                      width="400"
+                      height="300"
+                      [attr.loading]="$first ? 'eager' : 'lazy'"
+                      [attr.fetchpriority]="$first ? 'high' : 'auto'"
+                      decoding="async"
+                    />
+                  </picture>
+                } @else {
+                  <span class="collage-sin-foto"><app-icono nombre="Cake" [tamano]="40" /></span>
+                }
+                <span class="collage-nombre">{{ postre.nombre }}</span>
+              </a>
+            }
+          </div>
+        } @else if (cargandoDestacados) {
+          <p class="hero-cargando">Cargando nuestros postres...</p>
+        } @else {
+          <a routerLink="/menu/ventas" class="hero-sin-productos">
+            <app-icono nombre="Cake" [tamano]="44" />
+            <strong>Mira nuestro catálogo</strong>
+            <small>Tortas, cheesecakes y bocaditos disponibles hoy</small>
+          </a>
+        }
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CATALOGO DESTACADO -->
+<section class="catalogo py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="catalogo-title">Lo que más se pide</h2>
+      <p class="catalogo-subtitle">Los favoritos de la semana, disponibles hoy hasta agotar stock.</p>
+    </div>
+
+    @if (cargandoDestacados) {
+      <p class="text-center text-muted">Cargando nuestros postres...</p>
+    }
+
+    @if (!cargandoDestacados && destacados.length === 0) {
+      <p class="text-center text-muted">Muy pronto vas a ver aquí nuestros postres</p>
+    }
+
+    <div class="row g-4">
+      @for (postre of destacados; track postre.id_postre) {
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="postre-card h-100">
+            @if (postre.imagen) {
+              <picture>
+                <source
+                  type="image/webp"
+                  [srcset]="webpSrcset(postre)"
+                  sizes="(min-width: 992px) 400px, (min-width: 576px) 50vw, 100vw"
+                />
+                <img
+                  [src]="urlImagenPostre(postre, 600)"
+                  [alt]="postre.nombre"
+                  class="postre-foto"
+                  width="400"
+                  height="160"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            } @else {
+              <div class="postre-icono"><app-icono nombre="Image" [tamano]="40" /></div>
+            }
+            <h3 class="postre-nombre">{{ postre.nombre }}</h3>
+            <p class="postre-resena">{{ postre.descripcion || 'Un dulce hecho con mucho cariño.' }}</p>
+            <p class="postre-precio">S/ {{ postre.precio_actual }}</p>
+            <button class="btn btn-comprar-sm" (click)="irAComprar()">Ver en la tienda</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN DE RESEÑAS Y OPINIONES -->
+<section class="resenas-section py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="badge badge-resenas mb-2"><app-icono nombre="Star" [tamano]="14" /> Lo que dicen nuestros clientes</span>
+      <h2 class="resenas-title">Experiencias Endulzadas</h2>
+      <p class="resenas-subtitle">Descubre por qué nuestros postres enamoran a todos</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="resena-card h-100">
+          <div class="estrellas">@for (e of [1,2,3,4,5]; track e) {<app-icono nombre="Star" [tamano]="16" etiqueta="5 de 5 estrellas" />}</div>
+          <p class="resena-texto">"Los cupcakes de fresa son de otro mundo: masa esponjosa y relleno natural."</p>
+          <div class="cliente-info">
+            <strong>— Lucía M.</strong>
+            <small class="text-muted d-block">Cliente Frecuente</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="resena-card h-100">
+          <div class="estrellas">@for (e of [1,2,3,4,5]; track e) {<app-icono nombre="Star" [tamano]="16" etiqueta="5 de 5 estrellas" />}</div>
+          <p class="resena-texto">"Pedí la Selva Negra para un cumpleaños y fue el éxito de la fiesta."</p>
+          <div class="cliente-info">
+            <strong>— Carlos R.</strong>
+            <small class="text-muted d-block">Comprador Verificado</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="resena-card h-100">
+          <div class="estrellas">@for (e of [1,2,3,4,5]; track e) {<app-icono nombre="Star" [tamano]="16" etiqueta="5 de 5 estrellas" />}</div>
+          <p class="resena-texto">"La atención por WhatsApp fue rapidísima y el pedido llegó impecable y fresco."</p>
+          <div class="cliente-info">
+            <strong>— Andrea S.</strong>
+            <small class="text-muted d-block">Cliente Satisfecha</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+  <a routerLink="/entregas" class="btn btn-outline-resenas">
+    <app-icono nombre="ImageSquare" [tamano]="16" /> Ver evidencia de entregas y fotos reales
+  </a>
+</div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<!-- CIERRE: las cuentas solo se ofrecen a quien aún no tiene sesión; para el
+     que ya entró, este bloque era ruido y le mostraba "Iniciar sesión" de
+     nuevo. -->
+@if (!estaAutenticado) {
+  <section class="cta-final text-center py-5">
+    <div class="container">
+      <h2>¿Se te antojó algo dulce?</h2>
+      <p class="mb-4">Crea tu cuenta gratis y pide en minutos.</p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <button (click)="irARegistro()" class="btn btn-comprar btn-lg">Crear mi cuenta</button>
+        <button (click)="irALogin()" class="btn btn-outline-registro btn-lg">Ya tengo cuenta</button>
+      </div>
+    </div>
+  </section>
+}
+
+</main>
+
+<footer class="footer text-center py-4">
+  <p class="mb-0">© 2026 Azúcar &amp; Amor · Dulces hechos en casa con amor</p>
+</footer>

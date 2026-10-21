@@ -1,0 +1,621 @@
+<main class="tienda-page">
+
+  <!-- BARRA LOCAL DEL MODULO (la marca, usuario y cerrar sesión ya viven en el menu lateral) -->
+  <header class="navbar-tienda py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <!-- ACCESIBILIDAD: la marca del módulo NO es el título de la página (ese
+         es "Elige tus postres favoritos"). Tenía etiqueta <h1> y provocaba
+         dos h1 por página y un salto h1 -> h5 en el orden de encabezados. -->
+    <span class="h5 text-white fw-bold mb-0 d-flex align-items-center gap-2">
+      <app-icono nombre="ForkKnife" [tamano]="20" />
+      Ventas
+    </span>
+
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-2" (click)="mostrarCarrito = !mostrarCarrito">
+        <app-icono nombre="ShoppingCart" [tamano]="18" />
+        Carrito ({{ totalItemsCarrito }})
+      </button>
+      @if (esAdmin) {
+        <span class="badge bg-warning text-dark">Modo Admin</span>
+      }
+    </div>
+  </header>
+
+  <div class="container py-4">
+
+    <!-- AVISO DE ACCIONES (reemplaza a alert() del navegador) -->
+    @if (mensajeAccion) {
+      <div class="aviso-accion" [class.error]="mensajeAccionError" role="status">
+        {{ mensajeAccion }}
+        @if (idPostrePendienteEliminar !== null) {
+          <button type="button" class="btn-cancelar-accion" (click)="cancelarEliminacion()">Cancelar</button>
+        }
+      </div>
+    }
+    
+    <!-- BARRA DE GESTIÓN DE CATÁLOGO (admin y pastelero; el backend usa soloPastelero) -->
+    @if (puedeAdministrarCatalogo) {
+      <div class="panel-admin-banner d-flex justify-content-between align-items-center p-3 mb-4 rounded-3 shadow-sm">
+        <div>
+          <h2 class="h5 mb-0 fw-bold text-dark">
+            {{ esAdmin ? 'Modo Administrador Activo' : 'Modo Cocina Activo' }}
+          </h2>
+          <small class="text-muted">Gestiona el inventario de postres de tu tienda</small>
+        </div>
+        <button class="btn btn-primary-admin rounded-pill px-4 fw-bold" (click)="abrirModalCrearPostre()">
+          <app-icono nombre="Plus" [tamano]="16" /> Agregar nuevo postre
+        </button>
+      </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div>
+        <h1 class="titulo-tienda mb-1">Elige tus postres favoritos</h1>
+        <p class="subtitulo-tienda">Selecciona la cantidad y agrégalos a tu carrito</p>
+      </div>
+    </div>
+
+    <!-- FILTRO POR CATEGORÍA -->
+    @if (categorias.length > 0) {
+      <div class="filtro-categorias mb-4" role="group" aria-label="Filtrar postres por categoría">
+        <button
+          type="button"
+          class="chip-categoria"
+          [class.activo]="categoriaSeleccionada === null"
+          [attr.aria-pressed]="categoriaSeleccionada === null"
+          (click)="seleccionarCategoria(null)"
+        >
+          Todos ({{ postres.length }})
+        </button>
+        @for (categoria of categorias; track categoria.id_categoria) {
+          @if (contarPorCategoria(categoria.id_categoria) > 0) {
+            <button
+              type="button"
+              class="chip-categoria"
+              [class.activo]="categoriaSeleccionada === categoria.id_categoria"
+              [attr.aria-pressed]="categoriaSeleccionada === categoria.id_categoria"
+              (click)="seleccionarCategoria(categoria.id_categoria)"
+            >
+              {{ categoria.nombre }} ({{ contarPorCategoria(categoria.id_categoria) }})
+            </button>
+          }
+        }
+      </div>
+    }
+
+    @if (cargando) {
+      <p class="estado-msg">Cargando catálogo...</p>
+    }
+
+    @if (errorCarga) {
+      <p class="estado-msg error">{{ errorCarga }}</p>
+    }
+
+    @if (!cargando && !errorCarga && postres.length === 0) {
+      <div class="text-center py-5">
+        <p class="estado-msg fs-5">No hay postres disponibles por el momento.</p>
+        @if (esAdmin) {
+          <button class="btn btn-primary-admin rounded-pill px-4 mt-2" (click)="abrirModalCrearPostre()">
+            Sé el primero en agregar un postre
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Sin resultados para la categoría elegida -->
+    @if (!cargando && !errorCarga && postres.length > 0 && postresFiltrados.length === 0) {
+      <div class="text-center py-5">
+        <p class="estado-msg fs-5">No hay postres disponibles en esta categoría.</p>
+        <button class="btn-secundario rounded-pill px-4 mt-2" (click)="seleccionarCategoria(null)">
+          Ver todos los postres
+        </button>
+      </div>
+    }
+
+    <!-- GRID DE POSTRES -->
+<div class="row g-4">
+  @for (postre of postresFiltrados; track postre.id_postre) {
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="postre-card h-100 position-relative">
+        
+        <div class="postre-imagen-wrap">
+          <!-- BOTONES DE ACCIÓN (CON Z-INDEX SUPERIOR) -->
+          @if (esAdmin) {
+            <div class="admin-card-actions position-absolute top-0 end-2 mt-2 d-flex gap-1">
+              <button
+                class="btn btn-light btn-sm shadow-sm rounded-circle"
+                (click)="editarPostre(postre)"
+                [title]="'Editar ' + postre.nombre"
+                [attr.aria-label]="'Editar ' + postre.nombre"
+              >
+                <app-icono nombre="PencilSimple" [tamano]="16" />
+              </button>
+              <button
+                class="btn btn-danger btn-sm shadow-sm rounded-circle"
+                [class.confirmando]="idPostrePendienteEliminar === postre.id_postre"
+                (click)="eliminarPostre(postre.id_postre)"
+                [title]="idPostrePendienteEliminar === postre.id_postre ? 'Confirma la eliminación' : 'Eliminar'"
+                [attr.aria-label]="idPostrePendienteEliminar === postre.id_postre ? 'Confirmar eliminación de ' + postre.nombre : 'Eliminar ' + postre.nombre"
+              >
+                <app-icono [nombre]="idPostrePendienteEliminar === postre.id_postre ? 'Warning' : 'Trash'" [tamano]="16" />
+              </button>
+            </div>
+          }
+
+          @if (postre.imagen) {
+            <!-- <picture> con variantes WebP de 400/800 px (las genera el
+                 script `npm run optimizar-imagenes` del backend). La PRIMERA
+                 tarjeta se carga con prioridad (eager + fetchpriority) porque
+                 Lighthouse la detecta como el elemento LCP de esta página; el
+                 resto sigue en lazy. -->
+            <picture>
+              <source
+                type="image/webp"
+                [srcset]="webpSrcset(postre.imagen)"
+                sizes="(min-width: 992px) 400px, (min-width: 576px) 50vw, 100vw"
+              />
+              <img
+                [src]="urlImagenPostre(postre.imagen)"
+                [alt]="postre.nombre"
+                class="postre-imagen"
+                width="400"
+                height="160"
+                [attr.loading]="$first ? 'eager' : 'lazy'"
+                [attr.fetchpriority]="$first ? 'high' : 'auto'"
+                decoding="async"
+              />
+            </picture>
+          } @else {
+            <div class="postre-imagen-placeholder"><app-icono nombre="Image" [tamano]="36" /></div>
+          }
+
+          @if (puedeAdministrarCatalogo) {
+            <label class="btn-foto-postre" [class.subiendo]="subiendoImagenId === postre.id_postre">
+              <app-icono nombre="Camera" [tamano]="16" />
+              {{ subiendoImagenId === postre.id_postre ? 'Subiendo...' : (postre.imagen ? 'Cambiar foto' : 'Agregar foto') }}
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                [disabled]="subiendoImagenId === postre.id_postre"
+                (change)="seleccionarImagenPostre($event, postre)"
+              />
+            </label>
+          }
+        </div>
+
+        <!-- ACCESIBILIDAD: h2 (no h3) para no saltarse un nivel bajo el h1 de
+             la página. La clase h3 conserva EXACTAMENTE el mismo tamaño. -->
+        <h2 class="postre-nombre me-4 h3">{{ postre.nombre }}</h2>
+        <!-- Se muestra siempre (aunque esté vacía) para que el precio y el
+             botón queden a la misma altura en todas las tarjetas. -->
+        <p class="postre-descripcion">{{ postre.descripcion || '' }}</p>
+        <div class="postre-footer">
+          <span class="postre-precio">S/ {{ postre.precio_actual }}</span>
+          <span class="postre-stock">Stock: {{ postre.stock_total }}</span>
+        </div>
+        <button class="btn-agregar" (click)="agregarAlCarrito(postre)">
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+  <!-- PANEL DE CARRITO -->
+  @if (mostrarCarrito) {
+    <div class="carrito-overlay" (click)="mostrarCarrito = false"></div>
+    <aside class="carrito-panel">
+      <div class="carrito-header">
+        <h2>Tu carrito</h2>
+        <button class="btn-cerrar" (click)="mostrarCarrito = false" aria-label="Cerrar el carrito"><app-icono nombre="XCircle" [tamano]="22" /></button>
+      </div>
+
+      @if (carrito.length === 0) {
+        <p class="carrito-vacio">Tu carrito está vacío. ¡Agrega algo dulce!</p>
+      }
+
+      <div class="carrito-items">
+        @for (item of carrito; track item.postre.id_postre) {
+          <div class="carrito-item">
+            <div class="carrito-item-info">
+              <span class="carrito-item-nombre">{{ item.postre.nombre }}</span>
+              <span class="carrito-item-precio">S/ {{ item.postre.precio_actual }} c/u</span>
+            </div>
+            <div class="carrito-item-controles">
+              <button (click)="cambiarCantidad(item.postre.id_postre, item.cantidad - 1)" aria-label="Quitar una unidad"><app-icono nombre="Minus" [tamano]="14" /></button>
+              <span>{{ item.cantidad }}</span>
+              <button (click)="cambiarCantidad(item.postre.id_postre, item.cantidad + 1)" aria-label="Agregar una unidad"><app-icono nombre="Plus" [tamano]="14" /></button>
+              <button class="btn-quitar" (click)="quitarDelCarrito(item.postre.id_postre)" aria-label="Quitar del carrito"><app-icono nombre="Trash" [tamano]="16" /></button>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (carrito.length > 0) {
+        <div class="carrito-total">
+          <span>Total</span>
+          <strong>S/ {{ totalCarrito.toFixed(2) }}</strong>
+        </div>
+        <button class="btn-checkout" (click)="abrirCheckout()">Proceder al pago</button>
+        <!-- El panel se abre solo al agregar un producto y tapa la tienda: sin
+             esta salida, quien quiere seguir eligiendo tiene que descubrir que
+             se cierra tocando la X o la zona oscurecida. -->
+        <button class="btn-seguir-comprando" type="button" (click)="mostrarCarrito = false">
+          Seguir comprando
+        </button>
+      }
+    </aside>
+  }
+
+  <!-- MODAL DE CHECKOUT -->
+  @if (mostrarCheckout) {
+    <div class="checkout-overlay">
+      <div class="checkout-modal">
+
+        @if (!compraExitosa) {
+          <h2>Confirmar compra</h2>
+
+          <div class="checkout-resumen">
+            @for (item of carrito; track item.postre.id_postre) {
+              <div class="checkout-resumen-item">
+                <span>{{ item.cantidad }}x {{ item.postre.nombre }}</span>
+                <span>S/ {{ (item.cantidad * item.postre.precio_actual).toFixed(2) }}</span>
+              </div>
+            }
+            <div class="checkout-resumen-total">
+              <span>Total a pagar</span>
+              <strong>S/ {{ totalCarrito.toFixed(2) }}</strong>
+            </div>
+          </div>
+
+          <!-- Entrega: viene del perfil del cliente.
+               Antes el pedido se guardaba sin dirección, así que el admin
+               atendía un pedido sin saber a dónde llevarlo. -->
+          <div class="checkout-entrega">
+            <label>Entrega a domicilio</label>
+            @if (direccionEntrega) {
+              <p class="entrega-texto">
+                <app-icono nombre="MapPin" [tamano]="16" />
+                <span>{{ direccionEntrega }}</span>
+              </p>
+              @if (enlaceUbicacionEntrega) {
+                <a
+                  class="entrega-mapa"
+                  [href]="enlaceUbicacionEntrega"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >Ver el punto en el mapa</a>
+              }
+              <p class="entrega-ayuda">
+                ¿Cambiaste de dirección? <a routerLink="/menu/perfil">Actualízala en Mi perfil</a>.
+              </p>
+            } @else {
+              <p class="entrega-aviso">
+                Todavía no guardaste tu dirección de entrega.
+                <a routerLink="/menu/perfil">Agrégala en Mi perfil</a> para que sepamos dónde llevarte el pedido.
+              </p>
+            }
+          </div>
+
+          <div class="metodo-pago-section">
+            <label>Método de pago</label>
+            <div class="metodo-pago-opciones">
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Yape'">
+                <input type="radio" name="metodoPago" value="Yape" [(ngModel)]="metodoPago" />
+                <app-icono nombre="PaperPlaneTilt" [tamano]="18" /> Yape
+              </label>
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Plin'">
+                <input type="radio" name="metodoPago" value="Plin" [(ngModel)]="metodoPago" />
+                <app-icono nombre="PaperPlaneTilt" [tamano]="18" /> Plin
+              </label>
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Tarjeta'">
+                <input type="radio" name="metodoPago" value="Tarjeta" [(ngModel)]="metodoPago" />
+                <app-icono nombre="CreditCard" [tamano]="18" /> Tarjeta
+              </label>
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Efectivo'">
+                <input type="radio" name="metodoPago" value="Efectivo" [(ngModel)]="metodoPago" />
+                <app-icono nombre="Money" [tamano]="18" /> Efectivo
+              </label>
+              <label class="metodo-pago-opcion" [class.selected]="metodoPago === 'Transferencia'">
+                <input type="radio" name="metodoPago" value="Transferencia" [(ngModel)]="metodoPago" />
+                <app-icono nombre="Receipt" [tamano]="18" /> Transferencia
+              </label>
+            </div>
+          </div>
+
+          @if (errorCompra) {
+            <div class="checkout-error">{{ errorCompra }}</div>
+          }
+
+          <div class="checkout-acciones">
+            <button class="btn-secundario" (click)="cerrarCheckout()" [disabled]="procesandoCompra">
+              Cancelar
+            </button>
+            <button class="btn-confirmar" (click)="confirmarCompra()" [disabled]="procesandoCompra">
+              @if (procesandoCompra) {
+                <span class="spinner"></span> Procesando...
+              } @else {
+                Confirmar compra
+              }
+            </button>
+          </div>
+
+        } @else if (esperandoComprobante) {
+
+          <!-- Yape/Plin y Transferencia comparten este mismo paso: mostrar
+               cómo pagar y pedir la foto del comprobante -->
+          <div class="checkout-comprobante">
+
+            @if (metodoPago === 'Yape') {
+              <h2 class="titulo-con-icono"><app-icono nombre="PaperPlaneTilt" [tamano]="20" /> Paga con Yape</h2>
+              <p class="text-muted">
+                Escanea el QR con tu app de Yape, realiza el pago de
+                <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+                y sube la captura de tu pago.
+              </p>
+              <img
+                [src]="yapeQrUrl"
+                alt="QR de pago Yape"
+                class="qr-pago-img"
+                width="320"
+                height="320"
+                loading="lazy"
+                decoding="async"
+              />
+            } @else if (metodoPago === 'Plin') {
+              <h2 class="titulo-con-icono"><app-icono nombre="PaperPlaneTilt" [tamano]="20" /> Paga con Plin</h2>
+              <p class="text-muted">
+                Escanea el QR con tu app de Plin, realiza el pago de
+                <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+                y sube la captura de tu pago.
+              </p>
+              <img
+                [src]="plinQrUrl"
+                alt="QR de pago Plin"
+                class="qr-pago-img"
+                width="320"
+                height="320"
+                loading="lazy"
+                decoding="async"
+              />
+            } @else {
+              <h2 class="titulo-con-icono"><app-icono nombre="Receipt" [tamano]="20" /> Paga por Transferencia / Banca Móvil</h2>
+              <p class="text-muted">
+                Realiza la transferencia de
+                <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+                desde tu banca móvil a esta cuenta, y sube la captura de tu operación.
+              </p>
+
+              <div class="datos-bancarios text-start mx-auto" style="max-width: 320px;">
+                <p class="mb-1"><strong>Banco:</strong> {{ datosBancarios.banco }}</p>
+                <p class="mb-1"><strong>Tipo de cuenta:</strong> {{ datosBancarios.tipoCuenta }}</p>
+                <p class="mb-1"><strong>N° de cuenta:</strong> {{ datosBancarios.numeroCuenta }}</p>
+                <p class="mb-1"><strong>CCI:</strong> {{ datosBancarios.cci }}</p>
+                <p class="mb-0"><strong>Titular:</strong> {{ datosBancarios.titular }}</p>
+              </div>
+            }
+
+            <div class="field mt-3">
+              <label for="comprobante" class="form-label fw-bold">Foto del comprobante *</label>
+              <input id="comprobante" type="file" accept="image/*" class="form-control" (change)="seleccionarComprobante($event)" />
+            </div>
+
+            @if (previsualizacionComprobante) {
+              <img
+                [src]="previsualizacionComprobante"
+                alt="Previsualización del comprobante"
+                class="comprobante-preview"
+                width="160"
+                height="160"
+                loading="lazy"
+                decoding="async"
+              />
+            }
+
+            @if (errorComprobante) {
+              <div class="checkout-error">{{ errorComprobante }}</div>
+            }
+
+            <div class="checkout-acciones">
+              <button class="btn-secundario" (click)="cerrarConfirmacion()" [disabled]="subiendoComprobante">
+                Subir luego desde "Mis pedidos"
+              </button>
+              <button class="btn-confirmar" (click)="subirComprobante()" [disabled]="subiendoComprobante || !archivoComprobante">
+                @if (subiendoComprobante) {
+                  <span class="spinner"></span> Subiendo...
+                } @else {
+                  Enviar comprobante
+                }
+              </button>
+            </div>
+            <p class="text-muted mt-2"><small>Tu pedido quedará <strong>pendiente de pago</strong> hasta que confirmemos tu comprobante.</small></p>
+          </div>
+
+        } @else if (metodoPago === 'Tarjeta') {
+
+          <!-- Pago con tarjeta por Mercado Pago: se muestra el monto y el link.
+               Al pagar, Mercado Pago devuelve al cliente a la página de
+               resultado y el pedido se confirma solo. -->
+          <div class="checkout-comprobante text-center">
+            <h2 class="titulo-con-icono"><app-icono nombre="CreditCard" [tamano]="20" /> Pago con tarjeta</h2>
+            <p class="text-muted mb-1">Pedido #{{ compraExitosa.idVenta }}</p>
+            <p class="mp-monto">S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</p>
+
+            @if (pagandoConTarjeta) {
+              <p class="text-muted"><span class="spinner"></span> Generando tu link de pago...</p>
+            } @else if (linkMercadoPago) {
+              <button type="button" class="btn-confirmar" (click)="irAMercadoPago()">
+                <app-icono nombre="CreditCard" [tamano]="18" /> Pagar con Mercado Pago
+              </button>
+              <p class="text-muted mt-3 mb-1"><small>O copia tu link de pago:</small></p>
+              <div class="mp-link-caja">
+                <a class="mp-link" [href]="linkMercadoPago" target="_blank" rel="noopener noreferrer">{{ linkMercadoPago }}</a>
+                <button type="button" class="btn-secundario" (click)="copiarLinkMercadoPago()">
+                  {{ linkCopiado ? '¡Copiado!' : 'Copiar' }}
+                </button>
+              </div>
+              <p class="text-muted mt-2"><small>Cuando termines de pagar volverás aquí y tu pedido se confirmará automáticamente. El link vale 24 horas.</small></p>
+            } @else {
+              @if (errorPagoTarjeta) {
+                <div class="checkout-error">{{ errorPagoTarjeta }}</div>
+              }
+              <button class="btn-confirmar" (click)="generarLinkMercadoPago()">
+                Reintentar link de pago
+              </button>
+              <p class="text-muted mt-2"><small>Tu pedido quedó registrado como pendiente. También puedes pagarlo después desde "Mis pedidos".</small></p>
+            }
+
+            <div class="checkout-acciones mt-3">
+              <button class="btn-secundario" (click)="cerrarConfirmacion()" [disabled]="pagandoConTarjeta">
+                Cerrar
+              </button>
+            </div>
+          </div>
+
+        } @else {
+          <div class="checkout-exito">
+            <div class="exito-icono"><app-icono nombre="CheckCircle" [tamano]="48" /></div>
+            <h2>¡Pedido registrado!</h2>
+            <p>
+  Total <strong>S/ {{ compraExitosa.montoTotal | number:'1.2-2' }}</strong>
+</p>
+            <p class="text-muted">Pedido #{{ compraExitosa.idVenta }} registrado correctamente.</p>
+            <p class="text-muted"><small>Tu pedido está <strong>pendiente de confirmación de pago</strong>. Te avisaremos cuando quede confirmado.</small></p>
+            <button class="btn-confirmar" (click)="cerrarConfirmacion()">Seguir comprando</button>
+          </div>
+        }
+
+      </div>
+    </div>
+  }
+
+  <!-- MODAL DE CREAR / EDITAR POSTRE (ADMIN) -->
+  @if (mostrarModalCrear) {
+    <div class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+          <h3 class="m-0 text-dark fw-bold">
+            {{ modoEdicion ? 'Editar Postre' : 'Agregar Nuevo Postre' }}
+          </h3>
+          <button class="btn-cerrar" (click)="cerrarModalCrearPostre()" aria-label="Cerrar"><app-icono nombre="XCircle" [tamano]="22" /></button>
+        </div>
+
+        <form #formPostre="ngForm" (ngSubmit)="guardarNuevoPostre()" novalidate>
+          <div class="mb-3">
+            <label for="nuevo-postre-categoria" class="form-label fw-bold text-secondary">Categoría *</label>
+            <select
+              id="nuevo-postre-categoria"
+              class="form-select"
+              [(ngModel)]="nuevoPostre.id_categoria"
+              name="id_categoria"
+              required
+            >
+              <option [ngValue]="null" disabled>Selecciona una categoría</option>
+              @for (cat of categorias; track cat.id_categoria) {
+                <option [ngValue]="cat.id_categoria">{{ cat.nombre }}</option>
+              }
+            </select>
+            @if (categorias.length === 0) {
+              <small class="text-danger">No hay categorías registradas todavía. Crea una desde /api/categorias antes de agregar postres.</small>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label for="nuevo-postre-nombre" class="form-label fw-bold text-secondary">Nombre del postre *</label>
+            <input
+              id="nuevo-postre-nombre"
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoPostre.nombre"
+              name="nombre"
+              placeholder="Ej. Torta de Chocolate"
+              maxlength="80"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="nuevo-postre-descripcion" class="form-label fw-bold text-secondary">Descripción</label>
+            <textarea
+              id="nuevo-postre-descripcion"
+              class="form-control"
+              rows="2"
+              [(ngModel)]="nuevoPostre.descripcion"
+              name="descripcion"
+              placeholder="Ej. Delicioso bizcocho bañado en fudge..."
+              maxlength="300"
+            ></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="nuevo-postre-precio" class="form-label fw-bold text-secondary">Precio (S/) *</label>
+              <input
+                id="nuevo-postre-precio"
+                type="number"
+                step="0.01"
+                min="0.01"
+                class="form-control"
+                [(ngModel)]="nuevoPostre.precio_actual"
+                name="precio_actual"
+                placeholder="0.00"
+                required
+                #precio="ngModel"
+                [class.is-invalid]="precio.invalid && precio.touched"
+              />
+              @if (precio.invalid && precio.touched) {
+                <small class="text-danger">El precio es obligatorio y debe ser mayor que 0.</small>
+              }
+            </div>
+
+            <div class="col-6 mb-3">
+              <label for="nuevo-postre-stock" class="form-label fw-bold text-secondary">Stock Inicial *</label>
+              <input
+                id="nuevo-postre-stock"
+                type="number"
+                min="0"
+                class="form-control"
+                [(ngModel)]="nuevoPostre.stock_total"
+                name="stock_total"
+                placeholder="10"
+                required
+                #stock="ngModel"
+                [class.is-invalid]="stock.invalid && stock.touched"
+              />
+              @if (stock.invalid && stock.touched) {
+                <small class="text-danger">El stock es obligatorio y no puede ser negativo.</small>
+              }
+            </div>
+          </div>
+
+          @if (errorCrearPostre) {
+            <div class="alert alert-danger py-2 fs-6 mb-3">
+              {{ errorCrearPostre }}
+            </div>
+          }
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-secondary rounded-pill px-4" (click)="cerrarModalCrearPostre()" [disabled]="guardandoPostre">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary-admin rounded-pill px-4 fw-bold"
+              [disabled]="guardandoPostre || categorias.length === 0"
+            >
+              @if (guardandoPostre) {
+                <span class="spinner"></span> Guardando...
+              } @else {
+                Guardar
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  </div>
+
+</main>

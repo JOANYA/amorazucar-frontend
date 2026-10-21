@@ -1,0 +1,100 @@
+<div class="seguimiento">
+
+  <!-- Estado -->
+  @if (cargando) {
+    <p class="estado">Cargando el seguimiento...</p>
+  } @else if (error) {
+    <p class="estado error" role="alert">{{ error }}</p>
+  } @else {
+    @if (enCamino) {
+      <p class="estado en-camino" role="status">
+        <app-icono nombre="Motorcycle" [tamano]="18" />
+        <span><strong>Tu pedido va en camino.</strong> {{ resumen }}</span>
+      </p>
+      @if (desactualizado) {
+        <p class="estado aviso">
+          La ubicación se actualizó hace {{ minutosSinActualizar }} min; puede que el repartidor no tenga señal.
+        </p>
+      }
+    } @else if (entregado) {
+      <p class="estado entregado" role="status">
+        <app-icono nombre="CheckCircle" [tamano]="18" /> <span><strong>Pedido entregado.</strong></span>
+      </p>
+    } @else {
+      <p class="estado">
+        @if (esAdmin) { Aún no iniciaste la entrega de este pedido. }
+        @else { Tu pedido todavía no salió. Cuando salga verás aquí la ruta y por dónde va. }
+      </p>
+    }
+  }
+
+  <!-- Mapa -->
+  <div class="mapa-marco">
+    <div
+      #contenedor
+      class="mapa"
+      [class.marcando]="marcandoInicio"
+      aria-label="Mapa de OpenStreetMap con la ruta del pedido"
+    ></div>
+  </div>
+
+  <div class="leyenda">
+    <span><i class="punto rosa"></i> Entrega</span>
+    <span><i class="punto linea"></i> Ruta</span>
+    <span>🛵 Delivery</span>
+  </div>
+
+  <!-- Controles del admin -->
+  @if (esAdmin && !cargando && !error) {
+    <div class="controles">
+      @if (sinIniciar || entregado || enCamino) {
+        @if (!entregado) {
+          <p class="ayuda">
+            @if (enCamino) {
+              Para repartir, deja esta pantalla abierta en el celular con "Compartir mi ubicación" activado.
+              Si te desviaste, marca un nuevo inicio y pulsa "Iniciar entrega" para recalcular la ruta.
+            } @else {
+              1) Marca dónde sales (tu ubicación o un punto en el mapa). 2) Pulsa "Iniciar entrega".
+            }
+          </p>
+
+          <div class="fila">
+            <button type="button" class="btn-sec" (click)="usarMiUbicacionComoInicio()" [disabled]="ocupado">
+              <app-icono nombre="MapPin" [tamano]="16" /> Usar mi ubicación como inicio
+            </button>
+            <button type="button" class="btn-sec" (click)="marcarInicioEnMapa()" [disabled]="ocupado">
+              Marcar inicio en el mapa
+            </button>
+          </div>
+
+          @if (inicio) {
+            <p class="ayuda">Inicio marcado. Puedes arrastrar el pin verde para ajustarlo.</p>
+          }
+
+          <button type="button" class="btn-prin" (click)="iniciarEntrega()" [disabled]="ocupado || !inicio">
+            <app-icono nombre="Motorcycle" [tamano]="18" />
+            {{ enCamino ? 'Recalcular ruta' : 'Iniciar entrega' }}
+          </button>
+        }
+
+        @if (enCamino) {
+          <div class="fila">
+            <button type="button" class="btn-sec" (click)="alternarComparticion()">
+              {{ compartiendo ? 'Dejar de compartir mi ubicación' : 'Compartir mi ubicación en vivo' }}
+            </button>
+            <button type="button" class="btn-ok" (click)="finalizarEntrega()" [disabled]="ocupado">
+              <app-icono nombre="CheckCircle" [tamano]="16" /> Marcar entregado
+            </button>
+          </div>
+          @if (compartiendo) {
+            <p class="ayuda ok">Compartiendo tu ubicación en vivo con el cliente.</p>
+          }
+        }
+      }
+    </div>
+  }
+
+  @if (mensaje) {
+    <p class="mensaje" role="status">{{ mensaje }}</p>
+  }
+</div>

@@ -1,0 +1,269 @@
+.estado-msg {
+  color: #6b6b6b; /* 5.3:1 AA sobre blanco (el #888 daba 3.6:1) */
+}
+.estado-msg.error {
+  color: #c0392b;
+}
+
+.alert-cancelacion {
+  background: #fff3f0;
+  border: 1px solid #f3c8bd;
+  color: #a94430;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+/* Aviso de éxito. #1F6B29 sobre #e6f6e8 = 5.86:1 (AA) */
+.alert-exito {
+  background: #e6f6e8;
+  border: 1px solid #b7e0bd;
+  color: #1F6B29;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+/* ===== Detalle de productos del pedido ===== */
+
+/* #5A2D2D sobre blanco = 10.8:1 (AA) */
+.btn-ver-detalle {
+  background: #ffffff;
+  color: #5A2D2D;
+  border: 1px solid #F8C8D8;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.35rem;
+}
+
+.btn-ver-detalle:hover {
+  background: #fff0f4;
+}
+
+.btn-ver-detalle:focus-visible {
+  outline: 3px solid #8A6A16;
+  outline-offset: 2px;
+}
+
+.detalle-pedido {
+  margin-top: 0.6rem;
+  overflow-x: auto;
+}
+
+.detalle-pedido table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.detalle-pedido th,
+.detalle-pedido td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.detalle-pedido thead th {
+  color: #5A2D2D;
+  font-weight: 700;
+  border-bottom: 2px solid #F8C8D8;
+}
+
+.detalle-pedido td {
+  color: #333;
+}
+
+.detalle-pedido tfoot th,
+.detalle-pedido tfoot td {
+  font-weight: 700;
+  color: #5A2D2D;
+  border-bottom: none;
+}
+
+.detalle-cargando {
+  font-size: 0.85rem;
+  color: #6b6b6b;
+  margin: 0.5rem 0 0;
+}
+
+.detalle-error {
+  font-size: 0.85rem;
+  color: #a94430;
+  margin: 0.5rem 0 0;
+}
+
+/* ===== Confirmación en línea (reemplaza a los diálogos confirm() del navegador) ===== */
+/* Va dentro de la tarjeta del pedido, junto al botón que la abrió: una sola
+   confirmación por acción, visible sin tener que buscar arriba de la página. */
+.confirmacion-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #5A2D2D;
+}
+
+/* Blanco sobre #8a5200 = 6.15:1 (AA) */
+.btn-aceptar-accion {
+  background: #8a5200;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.btn-aceptar-accion:hover {
+  background: #6d4100;
+}
+
+/* #5A2D2D sobre blanco = 10.8:1 (AA) */
+.btn-cancelar-accion {
+  background: #ffffff;
+  color: #5A2D2D;
+  border: 2px solid #5A2D2D;
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.btn-cancelar-accion:hover {
+  background: #f1e4e4;
+}
+
+.btn-aceptar-accion:focus-visible,
+.btn-cancelar-accion:focus-visible {
+  outline: 3px solid #5A2D2D;
+  outline-offset: 2px;
+}
+
+.pedido-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 1rem;
+  height: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.pedido-card.pendiente { border-left: 4px solid #e8a33d; }
+.pedido-card.pagado { border-left: 4px solid #4caf50; }
+.pedido-card.cancelado { border-left: 4px solid #b0b0b0; opacity: 0.9; }
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.badge-estado {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+/* Textos de badge oscurecidos para cumplir AA sobre su fondo pastel */
+.badge-estado.pendiente { background: #fdf1de; color: #8a5200; } /* 5.7:1 AA (antes 3.47:1) */
+.badge-estado.pagado { background: #e6f6e8; color: #1F6B29; } /* 5.9:1 AA (antes 3.89:1) */
+.badge-estado.anulado { background: #f1f1f1; color: #5f5f5f; } /* 5.7:1 AA (antes 3.97:1) */
+
+.comprobante-thumb {
+  width: 100%;
+  max-width: 160px;
+  /* Los atributos width/height del HTML no deben forzar la caja ni deformar
+     la captura (el comprobante subido puede ser vertical u horizontal) */
+  height: auto;
+  aspect-ratio: auto;
+  border-radius: 10px;
+  margin: 0.5rem 0;
+  display: block;
+  border: 1px solid #eee;
+}
+
+.btn-confirmar-pago,
+.btn-cancelar-pedido {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.btn-confirmar-pago {
+  background: #2E7D32; /* blanco sobre #2E7D32 = 5.1:1 AA (el #4caf50 daba 2.78:1) */
+  color: #fff;
+}
+.btn-confirmar-pago:disabled {
+  background: #cfd8cf;
+  cursor: not-allowed;
+}
+.btn-cancelar-pedido {
+  background: #fbe9e7;
+  color: #c0392b;
+}
+
+.btn-ir-entregas {
+  display: inline-block;
+  margin-top: 0.6rem;
+  background: #fdf1de;
+  color: #8a5200; /* 5.7:1 AA sobre #fdf1de (antes 3.47:1) */
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.btn-eliminar-cancelado {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  background: #f1f1f1;
+  color: #666;
+}
+.btn-eliminar-cancelado:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-subir-comprobante {
+  display: inline-block;
+  border: 1px dashed #c9a35a;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #8a5200; /* 6.1:1 AA sobre #fffaf2 (antes 3.73:1) */
+  cursor: pointer;
+  margin: 0.4rem 0.5rem 0.4rem 0;
+  background: #fffaf2;
+}
+
+
+/* Pago con Mercado Pago desde la lista de pedidos */
+.btn-pagar-mp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: #009ee3; /* azul de Mercado Pago */
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-pagar-mp:disabled { opacity: 0.6; cursor: not-allowed; }
