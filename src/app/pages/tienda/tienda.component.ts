@@ -14,11 +14,12 @@ import { CategoriaService, Categoria } from '../../services/categoria.service';
 import { Postre } from '../../models/catalogo.model';
 import { ItemCarrito, MetodoPago } from '../../models/venta.model';
 import { IconoComponent } from '../../shared/icono/icono.component';
+import { BarraPublicaComponent } from '../../shared/barra-publica/barra-publica.component';
 
 @Component({
   selector: 'app-tienda',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, IconoComponent],
+  imports: [CommonModule, FormsModule, RouterLink, IconoComponent, BarraPublicaComponent],
   templateUrl: './tienda.component.html',
   styleUrls: ['./tienda.component.css']
 })

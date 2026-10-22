@@ -137,22 +137,6 @@ export class HomeComponent implements OnInit {
     return this.authService.estaAutenticado();
   }
 
-  get nombreUsuario(): string {
-    const usuario = this.authService.getUsuarioActual();
-    if (!usuario) return '';
-    return usuario.nombre || usuario.dni || 'Usuario';
-  }
-
-  get esAdmin(): boolean {
-    return this.authService.esAdmin();
-  }
-
-  // Método para cerrar sesión
-  cerrarSesion(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
   /**
    * "Ver la tienda" lleva SIEMPRE al catálogo público.
    *
@@ -164,18 +148,9 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/tienda']);
   }
 
-  // Redirección directa e incondicional a Login
-  irALogin(): void {
-    this.router.navigate(['/login']);
-  }
-
   // Redirección directa e incondicional a Registro
   irARegistro(): void {
     this.router.navigate(['/registro']);
   }
 
-  // Navegación hacia la página de entregas
-  irAEntregas(): void {
-    this.router.navigate(['/entregas']);
-  }
 }

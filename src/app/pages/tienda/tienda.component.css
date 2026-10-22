@@ -300,6 +300,25 @@
   background: #FFF3F6;
 }
 
+.btn-carrito-publico {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #5A2D2D;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.15rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn-carrito-publico:hover,
+.btn-carrito-publico:focus-visible {
+  background: #743a3a;
+}
+
 .postre-imagen {
   width: 100%;
   height: 100%;

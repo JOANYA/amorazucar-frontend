@@ -94,37 +94,6 @@
   overflow-x: clip;
 }
 
-/* ===== BARRA DE CONTACTO SUPERIOR (TOP BAR) ===== */
-.top-bar {
-  background-color: #FFF2F5;
-  border-bottom: 1px solid #F8C8D8;
-  font-size: 0.9rem;
-}
-
-.whatsapp-link {
-  color: #0f766e; /* 5.0:1 AA sobre #FFF2F5 (el #25D366 anterior daba 1.8:1 y el #128C7E 3.8:1, ambos fallan) */
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.whatsapp-link:hover {
-  transform: scale(1.03);
-  color: #0b5d57; /* 7.1:1 AA sobre #FFF2F5 */
-}
-
-.social-icon {
-  color: #5A2D2D;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: color 0.2s ease;
-}
-
-.social-icon:hover {
-  color: #C2416B;
-}
-
 /* ===== HERO ===== */
 .hero {
   position: relative;

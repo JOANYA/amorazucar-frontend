@@ -1,37 +1,33 @@
 <main class="tienda-page">
 
-  <!-- BARRA LOCAL DEL MODULO (la marca, usuario y cerrar sesión ya viven en el menu lateral) -->
-  <header class="navbar-tienda py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <!-- ACCESIBILIDAD: la marca del módulo NO es el título de la página (ese
-         es "Elige tus postres favoritos"). Tenía etiqueta <h1> y provocaba
-         dos h1 por página y un salto h1 -> h5 en el orden de encabezados. -->
-    @if (esVistaPublica) {
-      <a routerLink="/home" class="navbar-brand text-white fw-bold mb-0 d-flex align-items-center gap-2 text-decoration-none">
-        <app-icono nombre="Storefront" [tamano]="20" />
-        Azúcar &amp; Amor
-      </a>
-    } @else {
+  <!-- CABECERA.
+       En /tienda (catálogo público) se usa la MISMA barra del resto del sitio,
+       para que la navegación no cambie al entrar a comprar. Dentro del menú
+       (/menu/ventas) se mantiene la barra del módulo, porque el sidebar ya
+       lleva la marca y el usuario. -->
+  @if (esVistaPublica) {
+    <app-barra-publica />
+  } @else {
+    <header class="navbar-tienda py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <!-- ACCESIBILIDAD: la marca del módulo NO es el título de la página (ese
+           es "Elige tus postres favoritos"). Tenía etiqueta <h1> y provocaba
+           dos h1 por página y un salto h1 -> h5 en el orden de encabezados. -->
       <span class="h5 text-white fw-bold mb-0 d-flex align-items-center gap-2">
         <app-icono nombre="ForkKnife" [tamano]="20" />
         Ventas
       </span>
-    }
 
-    <div class="d-flex align-items-center gap-3 flex-wrap">
-      <button class="btn btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-2" (click)="mostrarCarrito = !mostrarCarrito">
-        <app-icono nombre="ShoppingCart" [tamano]="18" />
-        Carrito ({{ totalItemsCarrito }})
-      </button>
-      @if (esAdmin) {
-        <span class="badge bg-warning text-dark">Modo Admin</span>
-      }
-      @if (esVistaPublica && !estaAutenticado) {
-        <a routerLink="/login" class="btn btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-2">
-          <app-icono nombre="SignIn" [tamano]="16" /> Ingresar
-        </a>
-      }
-    </div>
-  </header>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <button class="btn btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-2" (click)="mostrarCarrito = !mostrarCarrito">
+          <app-icono nombre="ShoppingCart" [tamano]="18" />
+          Carrito ({{ totalItemsCarrito }})
+        </button>
+        @if (esAdmin) {
+          <span class="badge bg-warning text-dark">Modo Admin</span>
+        }
+      </div>
+    </header>
+  }
 
   <div class="container py-4">
 
@@ -60,11 +56,18 @@
       </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
       <div>
         <h1 class="titulo-tienda mb-1">Elige tus postres favoritos</h1>
         <p class="subtitulo-tienda">Selecciona la cantidad y agrégalos a tu carrito</p>
       </div>
+
+      @if (esVistaPublica) {
+        <button type="button" class="btn-carrito-publico" (click)="mostrarCarrito = !mostrarCarrito">
+          <app-icono nombre="ShoppingCart" [tamano]="18" />
+          Carrito ({{ totalItemsCarrito }})
+        </button>
+      }
     </div>
 
     <!-- FILTRO POR CATEGORÍA -->
@@ -125,7 +128,7 @@
     }
 
     <!-- GRID DE POSTRES -->
-<div class="row g-4">
+<div class="row g-4" [class.justify-content-center]="postresFiltrados.length < 3">
   @for (postre of postresFiltrados; track postre.id_postre) {
     <div class="col-12 col-sm-6 col-lg-4">
       <div class="postre-card h-100 position-relative">

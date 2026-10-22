@@ -10,35 +10,6 @@
      directo al contenido y evitar el menú. -->
 <main>
 
-<!-- BARRA DE CONTACTO SUPERIOR (TOP BAR) -->
-<div class="top-bar py-2">
-  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-    <!-- Enlace a WhatsApp -->
-    <a href="https://wa.me/51905502811?text=Hola,%20quisiera%20hacer%20un%20pedido%20en%20Az%C3%BAcar%20%26%20Amor"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="contact-link whatsapp-link">
-      <app-icono nombre="WhatsappLogo" [tamano]="18" />
-      <span>Pide por WhatsApp: <strong>+51 905 502 811</strong></span>
-    </a>
-
-    <!-- Redes Sociales -->
-    <div class="social-links d-flex gap-3 align-items-center">
-      <span class="d-none d-sm-inline text-muted small">Síguenos:</span>
-      <a href="https://www.instagram.com/azucar_amor_26?igsh=MTU1a3RpdDJmdGttcg==" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
-        <app-icono nombre="InstagramLogo" [tamano]="18" />
-        <span class="d-none d-md-inline">Instagram</span>
-      </a>
-      <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" title="Facebook">
-        <app-icono nombre="FacebookLogo" [tamano]="18" />
-        <span class="d-none d-md-inline">Facebook</span>
-      </a>
-    </div>
-
-  </div>
-</div>
-
 <!-- ============================================================
      HERO: producto real a un lado, mensaje y acciones al otro.
      Antes era un bloque centrado con emojis flotantes que dejaba
@@ -160,7 +131,9 @@
       <p class="text-center text-muted">Muy pronto vas a ver aquí nuestros postres</p>
     }
 
-    <div class="row g-4">
+    <!-- Con uno o dos postres, la rejilla de tres columnas dejaba un hueco a la
+         derecha; centrada se ve intencionada. -->
+    <div class="row g-4" [class.justify-content-center]="destacados.length < 3">
       @for (postre of destacados; track postre.id_postre) {
         <div class="col-12 col-sm-6 col-lg-4">
           <div class="postre-card h-100">
@@ -251,7 +224,7 @@
 
     <div class="text-center mt-5">
   <a routerLink="/entregas" class="btn btn-outline-resenas">
-    <app-icono nombre="ImageSquare" [tamano]="16" /> Ver evidencia de entregas y fotos reales
+    <app-icono nombre="ImageSquare" [tamano]="16" /> Ver las fotos de entregas
   </a>
 </div>
   </div>
@@ -268,7 +241,6 @@
       <p class="mb-4">Crea tu cuenta gratis y pide en minutos.</p>
       <div class="d-flex gap-3 justify-content-center flex-wrap">
         <button (click)="irARegistro()" class="btn btn-comprar btn-lg">Crear mi cuenta</button>
-        <button (click)="irALogin()" class="btn btn-outline-registro btn-lg">Ya tengo cuenta</button>
       </div>
     </div>
   </section>
@@ -296,7 +268,6 @@
       <h2 class="footer-titulo">Entregas</h2>
       <p class="footer-texto">Lima, el mismo día</p>
       <p class="footer-texto">Pedidos hasta las 6:00 p.m.</p>
-      <a routerLink="/entregas">Ver entregas reales</a>
     </div>
 
     <div class="footer-bloque">
@@ -307,6 +278,6 @@
   </div>
 
   <div class="footer-legal">
-    <p class="mb-0">© 2026 Azúcar &amp; Amor · Dulces hechos en casa con amor</p>
+    <p class="mb-0">© 2026 Azúcar &amp; Amor · Todos los derechos reservados</p>
   </div>
 </footer>
