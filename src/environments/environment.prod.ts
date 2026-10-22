@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  // Cambia esta URL cuando despliegues el backend en un servidor real
-  apiUrl: 'https://amorazucar-backend.onrender.com'
+  apiUrl: 'https://amorazucar-backend.onrender.com/api', // <-- ¡Asegúrate de poner /api al final!
+  culqiPublicKey: 'pk_test_TU_LLAVE_PUBLICA_AQUI'
 };
