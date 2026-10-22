@@ -67,6 +67,13 @@ import { IconoComponent } from '../icono/icono.component';
     .barra-publica {
       background: #5A2D2D;
       color: #fff;
+      /* Fija arriba al hacer scroll, igual que la cabecera anterior. Al pasar
+         la navegación a un componente compartido se perdió esta propiedad y el
+         menú se iba con el contenido. */
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      box-shadow: 0 4px 15px rgba(90, 45, 45, 0.18);
     }
 
     .barra-fila {
