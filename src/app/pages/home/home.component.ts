@@ -5,13 +5,14 @@ import { AuthService } from '../../services/auth.service';
 import { CatalogoService } from '../../services/catalogo.service';
 import { Postre } from '../../models/catalogo.model';
 import { IconoComponent } from '../../shared/icono/icono.component';
+import { BarraPublicaComponent } from '../../shared/barra-publica/barra-publica.component';
 
 const ESTADOS_OCULTOS = ['inactivo', 'agotado', 'eliminado', 'no disponible'];
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconoComponent],
+  imports: [CommonModule, RouterLink, IconoComponent, BarraPublicaComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -152,13 +153,15 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  // Botón "Quiero comprar": si tiene sesión va a la tienda, si no, lo manda a Login
+  /**
+   * "Ver la tienda" lleva SIEMPRE al catálogo público.
+   *
+   * Antes, sin sesión, este botón mandaba al login: el visitante nuevo tenía
+   * que registrarse antes de ver un solo precio. La cuenta se pide recién al
+   * confirmar el pedido.
+   */
   irAComprar(): void {
-    if (this.estaAutenticado) {
-      this.router.navigate(['/menu/ventas']);
-    } else {
-      this.router.navigate(['/login']);
-    }
+    this.router.navigate(['/tienda']);
   }
 
   // Redirección directa e incondicional a Login

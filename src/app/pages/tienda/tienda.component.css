@@ -307,13 +307,13 @@
   display: block;
 }
 
+/* Respaldo cuando el postre no tiene foto: se usa la misma caja que la imagen
+   para que la tarjeta no cambie de alto, con la ilustración de la marca. */
 .postre-imagen-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.8rem;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  background: #FDF2F5;
 }
 
 .btn-foto-postre {
@@ -684,6 +684,27 @@
   font-size: 0.85rem;
   margin-top: 1rem;
   text-align: center;
+}
+
+/* Aviso a quien compra sin cuenta: explica por qué se pide el login y que el
+   carrito no se pierde. */
+.checkout-aviso-cuenta {
+  background: #FDF2F5;
+  border: 1px solid #F8C8D8;
+  color: #5A2D2D;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin-top: 1rem;
+}
+
+.checkout-acciones a.btn-confirmar {
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .checkout-acciones {

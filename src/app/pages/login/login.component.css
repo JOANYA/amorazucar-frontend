@@ -24,6 +24,63 @@
   animation: fadeInUp 0.5s ease;
 }
 
+.volver-inicio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  color: #8A3B4F;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.volver-inicio:hover,
+.volver-inicio:focus-visible {
+  color: #5A2D2D;
+  text-decoration: underline;
+}
+
+.link-olvide {
+  display: block;
+  width: 100%;
+  margin-top: 0.85rem;
+  background: none;
+  border: none;
+  padding: 0.35rem;
+  color: #8A3B4F;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-olvide:hover,
+.link-olvide:focus-visible {
+  color: #5A2D2D;
+}
+
+.ayuda-password {
+  margin-top: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: #FDF2F5;
+  border: 1px solid #F8C8D8;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  color: #5A2D2D;
+}
+
+.ayuda-password p {
+  margin: 0 0 0.6rem;
+  line-height: 1.45;
+}
+
+.ayuda-password a {
+  color: #8A3B4F;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }

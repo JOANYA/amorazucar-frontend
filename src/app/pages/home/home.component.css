@@ -282,6 +282,9 @@
   width: 100%;
   height: 215px;
   object-fit: cover;
+  /* Centrado un poco hacia arriba: las fotos de producto suelen tener el plato
+     en el centro y aire en el borde inferior. */
+  object-position: center 35%;
 }
 
 /* La primera pieza ocupa las dos columnas y destaca más */
@@ -412,6 +415,13 @@
   text-align: center;
   box-shadow: 0 10px 25px rgba(90, 45, 45, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Columna flexible: así el precio y el botón se apoyan siempre en el borde
+     inferior y quedan a la misma altura en todas las tarjetas, tengan foto o no.
+     OJO: sin `align-items: center`, para que la foto conserve el ancho completo
+     (con centrado, el <picture> se encoge a su ancho intrínseco). El texto ya
+     se centra con `text-align`. */
+  display: flex;
+  flex-direction: column;
 }
 
 .postre-card:hover {
@@ -430,6 +440,16 @@
   object-fit: cover;
   border-radius: 14px;
   margin-bottom: 0.75rem;
+  /* La foto de algunos postres es una lámina promocional con el producto en los
+     bordes; se recorta desde arriba para que se vea la comida y no el borde. */
+  object-position: center 30%;
+}
+
+/* Respaldo cuando el postre todavía no tiene foto: la misma caja, sin hueco. */
+.postre-foto-vacia {
+  object-fit: cover;
+  object-position: center;
+  background: #FDF2F5;
 }
 
 .postre-nombre {
@@ -450,9 +470,14 @@
   font-weight: 800;
   font-size: 1.05rem;
   margin-bottom: 0.75rem;
+  /* Empuja precio y botón al fondo de la tarjeta. */
+  margin-top: auto;
 }
 
 .btn-comprar-sm {
+  /* Botón de ancho natural y centrado: la tarjeta es una columna flex, y sin
+     esto se estiraría de borde a borde. */
+  align-self: center;
   /* blanco sobre #C2416B = 4.9:1 y sobre #8A6A16 = 5.1:1 (AA) */
   background: linear-gradient(135deg, #C2416B 0%, #8A6A16 100%);
   color: #fff;
@@ -556,6 +581,62 @@
   font-size: 0.9rem;
 }
 
+/* Pie de página con la información que se busca antes de comprar: contacto,
+   reparto y medios de pago. Antes solo tenía el copyright. */
+.footer-contenido {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 2rem;
+  padding: 2.5rem 1rem 1.75rem;
+}
+
+.footer-nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.footer-claim {
+  margin: 0.6rem 0 0;
+  color: rgba(255, 248, 242, 0.72);
+  max-width: 26ch;
+}
+
+.footer-titulo {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #F3C6D4;
+  margin-bottom: 0.75rem;
+}
+
+.footer-bloque a,
+.footer-bloque p {
+  display: block;
+  color: rgba(255, 248, 242, 0.86);
+  text-decoration: none;
+  margin-bottom: 0.4rem;
+  line-height: 1.45;
+}
+
+.footer-bloque a:hover,
+.footer-bloque a:focus-visible {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer-legal {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 248, 242, 0.7);
+  font-size: 0.85rem;
+}
+
 /* ===== RESPONSIVE MEDIA QUERIES ===== */
 
 /* Tablet y móvil: el hero pasa a una sola columna y se centra el texto */
@@ -603,5 +684,11 @@
   .collage-pieza img,
   .collage-pieza:first-child img {
     height: 170px;
+  }
+
+  .footer-contenido {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 2rem 1rem 1.5rem;
   }
 }

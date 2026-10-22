@@ -26,6 +26,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/entregas/entregas.component').then((m) => m.EntregasComponent)
   },
 
+  // TIENDA PÚBLICA — el catálogo se puede ver sin cuenta.
+  //
+  // Antes el único catálogo vivía en /menu/ventas detrás de authGuard, así que
+  // quien entraba por primera vez solo veía dos postres en el home y, al pulsar
+  // "Ver la tienda", terminaba en el formulario de login sin haber visto un
+  // precio. Ahora se navega libremente y la cuenta se pide al confirmar el
+  // pedido (tienda.confirmarCompra ya redirige a /login si no hay sesión).
+  {
+    path: 'tienda',
+    loadComponent: () => import('./pages/tienda/tienda.component').then((m) => m.TiendaComponent)
+  },
+
   // LOGIN (Solo invitados)
   {
     path: 'login',

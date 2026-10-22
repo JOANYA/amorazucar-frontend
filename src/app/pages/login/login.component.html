@@ -1,12 +1,18 @@
 <!-- ACCESIBILIDAD: <main> = landmark principal de la página -->
 <main class="login-container">
   <div class="login-card">
+    <!-- Salida al sitio: antes este formulario era un callejón sin salida,
+         porque el logo no era un enlace y no había forma de volver. -->
+    <a routerLink="/home" class="volver-inicio">
+      <span aria-hidden="true">←</span> Volver al inicio
+    </a>
+
     <div class="logo-container">
       <div class="logo-circle">
         <span class="logo-icon">🎀</span>
       </div>
       <h1>Azúcar &amp; Amor</h1>
-      <p>Pastelería Artesanal</p>
+      <p>Repostería artesanal</p>
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
@@ -79,6 +85,36 @@
           <span class="spinner"></span>
         }
       </button>
+
+      <!-- Recuperación de contraseña.
+           No hay servidor de correo en el proyecto, así que en lugar de un
+           "te enviamos un enlace" que nunca llegaría, se indica el camino real
+           que usa el negocio: escribir por WhatsApp y que el administrador
+           restablezca la cuenta. -->
+      <button
+        type="button"
+        class="link-olvide"
+        (click)="mostrarAyudaPassword = !mostrarAyudaPassword"
+        [attr.aria-expanded]="mostrarAyudaPassword"
+      >
+        ¿Olvidaste tu contraseña?
+      </button>
+
+      @if (mostrarAyudaPassword) {
+        <div class="ayuda-password" role="region" aria-label="Cómo recuperar la contraseña">
+          <p>
+            Escríbenos por WhatsApp con tu DNI y te ayudamos a restablecerla.
+            Por seguridad no enviamos contraseñas por correo.
+          </p>
+          <a
+            href="https://wa.me/51905502811?text=Hola,%20olvid%C3%A9%20mi%20contrase%C3%B1a%20de%20Az%C3%BAcar%20%26%20Amor.%20Mi%20DNI%20es%20"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Pedir ayuda por WhatsApp
+          </a>
+        </div>
+      }
 
       <div class="form-footer">
         <p>¿No tienes una cuenta? <a routerLink="/registro">Regístrate aquí</a></p>

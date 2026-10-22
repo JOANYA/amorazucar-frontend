@@ -17,6 +17,8 @@ export class LoginComponent implements OnInit {
   hidePassword = true;
   isLoading = false;
   errorMessage = '';
+  /** Muestra las instrucciones de recuperación de contraseña. */
+  mostrarAyudaPassword = false;
   returnUrl: string = '/menu/ventas';
 
   constructor(

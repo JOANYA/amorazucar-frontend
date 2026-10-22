@@ -1,12 +1,20 @@
 <!-- ACCESIBILIDAD: <main>. Esta página se usa sola (/entregas) y dentro del
      layout del menú (/menu/entregas); el layout ya no declara <main>, así que
      aquí siempre hay exactamente uno. -->
+<!-- Barra compartida solo cuando la galería se abre sola; dentro del menú del
+     administrador el encabezado lo pone el sidebar. -->
+@if (esVistaPublica) {
+  <app-barra-publica />
+}
+
 <main class="entregas-container py-5">
   <div class="container">
     
     <!-- Encabezado -->
     <div class="text-center mb-5">
-      <a routerLink="/home" class="btn-volver mb-3">⬅ Volver al Inicio</a>
+      @if (!esVistaPublica) {
+        <a routerLink="/home" class="btn-volver mb-3">⬅ Volver al Inicio</a>
+      }
       <h1 class="titulo-galeria">📸 Pedidos Entregados con Amor</h1>
       <p class="subtitulo-galeria">
         Mira cómo llegan nuestros postres a los hogares de nuestros clientes. ¡100% reales e impecables!

@@ -1,46 +1,8 @@
-<!-- NAVBAR SUPERIOR -->
-<header class="navbar-tienda py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <!-- Marca / Logo -->
-  <a routerLink="/home" class="navbar-brand text-white fw-bold d-flex align-items-center gap-2 text-decoration-none">
-    <app-icono nombre="Storefront" [tamano]="22" />
-    Azúcar & Amor
-  </a>
-
-  <!-- Zona de usuario / Acciones -->
-  <div class="d-flex align-items-center gap-3 flex-wrap">
-    <!-- SI EL USUARIO ESTÁ LOGUEADO -->
-    @if (estaAutenticado) {
-      <div class="d-flex align-items-center gap-2 flex-wrap">
-        <span class="text-white fw-semibold">
-          Hola, {{ nombreUsuario }}
-        </span>
-
-        @if (esAdmin) {
-          <span class="badge bg-warning text-dark">Admin</span>
-        }
-
-        <a routerLink="/menu/ventas" class="btn btn-light rounded-pill px-3">
-          <app-icono nombre="ShoppingCart" [tamano]="16" /> Ir al Menú
-        </a>
-
-        <button class="btn btn-outline-light btn-sm rounded-pill" (click)="cerrarSesion()">
-          <app-icono nombre="SignOut" [tamano]="16" /> Cerrar Sesión
-        </button>
-      </div>
-    }
-    <!-- SI NO ESTÁ LOGUEADO -->
-    @else {
-      <div class="d-flex gap-2 flex-wrap">
-        <a routerLink="/login" class="btn btn-outline-light rounded-pill px-3">
-          <app-icono nombre="SignIn" [tamano]="16" /> Iniciar Sesión
-        </a>
-        <a routerLink="/registro" class="btn btn-light rounded-pill px-3">
-          <app-icono nombre="UserPlus" [tamano]="16" /> Registrarse
-        </a>
-      </div>
-    }
-  </div>
-</header>
+<!-- NAVBAR SUPERIOR: barra compartida por todas las páginas públicas.
+     Antes cada pantalla traía la suya (la home con marca y botones, entregas
+     con un "Volver al inicio", el login sin nada) y no había forma de llegar
+     a la tienda desde la cabecera. -->
+<app-barra-publica />
 
 <!-- ACCESIBILIDAD: <main> delimita el contenido principal de la página.
      Lighthouse (auditoría "landmark-one-main") penaliza que no exista este
@@ -138,7 +100,7 @@
         @if (collage.length > 0) {
           <div class="hero-collage" [class.con-dos]="collage.length < 3">
             @for (postre of collage; track postre.id_postre) {
-              <a routerLink="/menu/ventas" class="collage-pieza" [title]="postre.nombre">
+              <a routerLink="/tienda" class="collage-pieza" [title]="postre.nombre">
                 @if (postre.imagen) {
                   <!-- <picture>: el navegador baja la variante WebP de 400 px en
                        pantallas normales y la de 800 px solo si la pantalla es
@@ -170,7 +132,7 @@
         } @else if (cargandoDestacados) {
           <p class="hero-cargando">Cargando nuestros postres...</p>
         } @else {
-          <a routerLink="/menu/ventas" class="hero-sin-productos">
+          <a routerLink="/tienda" class="hero-sin-productos">
             <app-icono nombre="Cake" [tamano]="44" />
             <strong>Mira nuestro catálogo</strong>
             <small>Tortas, cheesecakes y bocaditos disponibles hoy</small>
@@ -220,7 +182,17 @@
                 />
               </picture>
             } @else {
-              <div class="postre-icono"><app-icono nombre="Image" [tamano]="40" /></div>
+              <!-- Postre sin foto: ilustración de la marca en el mismo espacio
+                   que ocuparía la foto, para que las tarjetas queden parejas. -->
+              <img
+                class="postre-foto postre-foto-vacia"
+                src="assets/img/postre-sin-foto.svg"
+                [alt]="'Foto de ' + postre.nombre + ' no disponible'"
+                width="400"
+                height="160"
+                loading="lazy"
+                decoding="async"
+              />
             }
             <h3 class="postre-nombre">{{ postre.nombre }}</h3>
             <p class="postre-resena">{{ postre.descripcion || 'Un dulce hecho con mucho cariño.' }}</p>
@@ -246,7 +218,7 @@
       <div class="col-12 col-md-4">
         <div class="resena-card h-100">
           <div class="estrellas">@for (e of [1,2,3,4,5]; track e) {<app-icono nombre="Star" [tamano]="16" etiqueta="5 de 5 estrellas" />}</div>
-          <p class="resena-texto">"Los cupcakes de fresa son de otro mundo: masa esponjosa y relleno natural."</p>
+          <p class="resena-texto">"Las empanadas de pollo llegan calientes y con la masa bien dorada. Se nota que son del día."</p>
           <div class="cliente-info">
             <strong>— Lucía M.</strong>
             <small class="text-muted d-block">Cliente Frecuente</small>
@@ -257,7 +229,7 @@
       <div class="col-12 col-md-4">
         <div class="resena-card h-100">
           <div class="estrellas">@for (e of [1,2,3,4,5]; track e) {<app-icono nombre="Star" [tamano]="16" etiqueta="5 de 5 estrellas" />}</div>
-          <p class="resena-texto">"Pedí la Selva Negra para un cumpleaños y fue el éxito de la fiesta."</p>
+          <p class="resena-texto">"Pedí el helado para la reunión del domingo y llegó a la hora, bien frío y bien presentado."</p>
           <div class="cliente-info">
             <strong>— Carlos R.</strong>
             <small class="text-muted d-block">Comprador Verificado</small>
@@ -304,6 +276,37 @@
 
 </main>
 
-<footer class="footer text-center py-4">
-  <p class="mb-0">© 2026 Azúcar &amp; Amor · Dulces hechos en casa con amor</p>
+<footer class="footer">
+  <div class="container footer-contenido">
+    <div class="footer-marca">
+      <span class="footer-nombre">
+        <app-icono nombre="Storefront" [tamano]="20" /> Azúcar &amp; Amor
+      </span>
+      <p class="footer-claim">Repostería artesanal · Dulces hechos en casa con amor</p>
+    </div>
+
+    <div class="footer-bloque">
+      <h2 class="footer-titulo">Contacto</h2>
+      <a href="https://wa.me/51905502811" target="_blank" rel="noopener noreferrer">WhatsApp: +51 905 502 811</a>
+      <a href="https://www.instagram.com/azucar_amor_26" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+    </div>
+
+    <div class="footer-bloque">
+      <h2 class="footer-titulo">Entregas</h2>
+      <p class="footer-texto">Lima, el mismo día</p>
+      <p class="footer-texto">Pedidos hasta las 6:00 p.m.</p>
+      <a routerLink="/entregas">Ver entregas reales</a>
+    </div>
+
+    <div class="footer-bloque">
+      <h2 class="footer-titulo">Pagos</h2>
+      <p class="footer-texto">Yape · Plin · Transferencia</p>
+      <p class="footer-texto">Tarjeta (Mercado Pago) · Efectivo</p>
+    </div>
+  </div>
+
+  <div class="footer-legal">
+    <p class="mb-0">© 2026 Azúcar &amp; Amor · Dulces hechos en casa con amor</p>
+  </div>
 </footer>

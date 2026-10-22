@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { EntregasService, Entrega } from '../../services/entregas.service';
 import { AuthService } from '../../services/auth.service';
+import { BarraPublicaComponent } from '../../shared/barra-publica/barra-publica.component';
 
 /** Lado máximo (px) al que se reduce una foto antes de guardarla. */
 const MAX_LADO_IMAGEN = 1000;
@@ -13,7 +14,7 @@ const CALIDAD_JPEG = 0.7;
 @Component({
   selector: 'app-entregas',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, BarraPublicaComponent],
   templateUrl: './entregas.component.html',
   styleUrls: ['./entregas.component.css']
 })
@@ -35,8 +36,14 @@ export class EntregasComponent implements OnInit {
 
   constructor(
     private entregasService: EntregasService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
+
+  /** La galería se usa sola (/entregas) y dentro del menú (/menu/entregas). */
+  get esVistaPublica(): boolean {
+    return !this.router.url.startsWith('/menu');
+  }
 
   ngOnInit(): void {
     this.cargarEntregas();

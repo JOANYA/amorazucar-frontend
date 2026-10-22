@@ -5,18 +5,30 @@
     <!-- ACCESIBILIDAD: la marca del módulo NO es el título de la página (ese
          es "Elige tus postres favoritos"). Tenía etiqueta <h1> y provocaba
          dos h1 por página y un salto h1 -> h5 en el orden de encabezados. -->
-    <span class="h5 text-white fw-bold mb-0 d-flex align-items-center gap-2">
-      <app-icono nombre="ForkKnife" [tamano]="20" />
-      Ventas
-    </span>
+    @if (esVistaPublica) {
+      <a routerLink="/home" class="navbar-brand text-white fw-bold mb-0 d-flex align-items-center gap-2 text-decoration-none">
+        <app-icono nombre="Storefront" [tamano]="20" />
+        Azúcar &amp; Amor
+      </a>
+    } @else {
+      <span class="h5 text-white fw-bold mb-0 d-flex align-items-center gap-2">
+        <app-icono nombre="ForkKnife" [tamano]="20" />
+        Ventas
+      </span>
+    }
 
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
       <button class="btn btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-2" (click)="mostrarCarrito = !mostrarCarrito">
         <app-icono nombre="ShoppingCart" [tamano]="18" />
         Carrito ({{ totalItemsCarrito }})
       </button>
       @if (esAdmin) {
         <span class="badge bg-warning text-dark">Modo Admin</span>
+      }
+      @if (esVistaPublica && !estaAutenticado) {
+        <a routerLink="/login" class="btn btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-2">
+          <app-icono nombre="SignIn" [tamano]="16" /> Ingresar
+        </a>
       }
     </div>
   </header>
@@ -166,7 +178,17 @@
               />
             </picture>
           } @else {
-            <div class="postre-imagen-placeholder"><app-icono nombre="Image" [tamano]="36" /></div>
+            <!-- Postre sin foto: en lugar del icono de imagen rota se pinta una
+                 ilustración de la marca, para que la tarjeta no parezca rota. -->
+            <img
+              class="postre-imagen postre-imagen-placeholder"
+              src="assets/img/postre-sin-foto.svg"
+              [alt]="'Foto de ' + postre.nombre + ' no disponible'"
+              width="400"
+              height="160"
+              loading="lazy"
+              decoding="async"
+            />
           }
 
           @if (puedeAdministrarCatalogo) {
@@ -328,18 +350,33 @@
             <div class="checkout-error">{{ errorCompra }}</div>
           }
 
-          <div class="checkout-acciones">
-            <button class="btn-secundario" (click)="cerrarCheckout()" [disabled]="procesandoCompra">
-              Cancelar
-            </button>
-            <button class="btn-confirmar" (click)="confirmarCompra()" [disabled]="procesandoCompra">
-              @if (procesandoCompra) {
-                <span class="spinner"></span> Procesando...
-              } @else {
-                Confirmar compra
-              }
-            </button>
-          </div>
+          @if (!estaAutenticado) {
+            <!-- Invitado: se le avisa ANTES de pulsar, en vez de mandarlo al
+                 login a mitad del pago. El carrito se conserva. -->
+            <p class="checkout-aviso-cuenta">
+              Para confirmar el pedido necesitas una cuenta: así puedes seguir su estado y pagar con tarjeta.
+              Tu carrito se guarda.
+            </p>
+            <div class="checkout-acciones">
+              <button class="btn-secundario" (click)="cerrarCheckout()">Cancelar</button>
+              <a class="btn-confirmar" routerLink="/login" [queryParams]="{ returnUrl: '/tienda' }">
+                Ingresar y confirmar
+              </a>
+            </div>
+          } @else {
+            <div class="checkout-acciones">
+              <button class="btn-secundario" (click)="cerrarCheckout()" [disabled]="procesandoCompra">
+                Cancelar
+              </button>
+              <button class="btn-confirmar" (click)="confirmarCompra()" [disabled]="procesandoCompra">
+                @if (procesandoCompra) {
+                  <span class="spinner"></span> Procesando...
+                } @else {
+                  Confirmar compra
+                }
+              </button>
+            </div>
+          }
 
         } @else if (esperandoComprobante) {
 

@@ -261,6 +261,18 @@ export class TiendaComponent implements OnInit {
     return this.authService.estaAutenticado();
   }
 
+  /**
+   * ¿Se está viendo el catálogo público (/tienda) o el módulo del menú
+   * (/menu/ventas)?
+   *
+   * Es el mismo componente en las dos rutas, pero el encabezado cambia: en la
+   * pública no hay menú lateral, así que la barra muestra la marca enlazada al
+   * inicio y los botones de sesión en lugar del rótulo «Ventas».
+   */
+  get esVistaPublica(): boolean {
+    return this.router.url.startsWith('/tienda');
+  }
+
   get nombreUsuario(): string {
     const usuario = this.authService.getUsuarioActual();
     if (!usuario) return '';
